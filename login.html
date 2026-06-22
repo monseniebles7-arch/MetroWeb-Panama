@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MetroWeb Panamá — Iniciar sesión</title>
+  <link rel="stylesheet" href="style.css"/>
+  <style>
+    body {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      background: var(--gris-fondo);
+    }
+
+    .login-card { display: contents; }
+
+    /* ── Panel izquierdo ── */
+    .panel-izq {
+      background: var(--gris-fondo);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px);
+      padding var(--sp-12) var(--sp-10);
+      position: relative;
+      min-height: 100vh;
+      border-right: 1px solid var(--gris-borde);
+    }
+
+   
+
+    
+    .logo-img {
+      width: 380px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .brand-tagline {
+      font-family: var(--font-display);
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--naranja);
+      text-align: center;
+      line-height: 1.4;
+      max-width: 280px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Tarjetas flotantes */
+    .float-cards {
+      position: relative;
+      width: 320px;
+      height: 230px;
+      z-index: 1;
+    }
+
+    .float-card {
+      position: absolute;
+      background: var(--blanco);
+      border-radius: var(--radio-lg);
+      box-shadow: 0 6px 28px rgba(26,58,107,0.12);
+      padding: var(--sp-3) var(--sp-4);
+      display: flex;
+      align-items: center;
+      gap: var(--sp-3);
+      animation: flotar 4s ease-in-out infinite;
+    }
+
+    .float-card:nth-child(1) { top: 0;    left: 0;   width: 195px; animation-delay: 0s; }
+    .float-card:nth-child(2) { top: 60px; right: 0;  width: 185px; animation-delay: 1.2s; }
+    .float-card:nth-child(3) { bottom: 0; left: 20px; width: 205px; animation-delay: 2.4s; }
+
+    @keyframes flotar {
+      0%, 100% { transform: translateY(0); }
+      50%       { transform: translateY(-9px); }
+    }
+
+    .float-icono {
+      width: 38px; height: 38px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 17px;
+      flex-shrink: 0;
+    }
+
+    .ic-azul    { background: var(--azul-claro); }
+    .ic-naranja { background: var(--naranja-suave); }
+    .ic-verde   { background: #ECFDF5; }
+
+    .float-texto p      { font-size: 11px; 
+      color: var(--gris-medio); 
+      margin: 0; 
+      line-height: 1.3; }
+    .float-texto strong { font-size: 13px; 
+      color: var(--negro); 
+      font-weight: 600; 
+      display: block; }
+
+    /* ── Panel derecho ── */
+    .panel-der {
+      background: var(--blanco);
+      padding: var(--sp-12) var(--sp-16);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      min-height: 100vh;
+    }
+
+    .panel-der h1       { font-size: var(--text-2xl); margin-bottom: var(--sp-1); }
+    .panel-der .subtitulo { margin-bottom: var(--sp-8); }
+
+    .separador {
+      text-align: center;
+      font-size: var(--text-xs);
+      color: var(--gris-medio);
+      margin: var(--sp-4) 0;
+      position: relative;
+    }
+    .separador::before, .separador::after {
+      content: '';
+      position: absolute;
+      top: 50%; width: 42%; height: 1px;
+      background: var(--gris-borde);
+    }
+    .separador::before { left: 0; }
+    .separador::after  { right: 0; }
+
+    .fila-opciones {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: var(--sp-6);
+    }
+
+    .olvide { font-size: var(--text-sm); color: var(--naranja); font-weight: 500; }
+    .olvide:hover { text-decoration: underline; }
+
+    @media (max-width: 620px) {
+      body       { grid-template-columns: 1fr; }
+      .panel-izq { min-height: auto; padding: var(--sp-10) var(--sp-6); }
+      .panel-der { padding: var(--sp-8) var(--sp-6); min-height: auto; }
+      .float-cards { width: 260px; height: 190px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="login-card">
+
+  <!-- ── Panel izquierdo ── -->
+  <div class="panel-izq">
+
+    <!-- Logo -->
+    <img src="logometro.png" alt="MetroWeb Panamá" class="logo-img"/>
+
+    <!-- Tagline -->
+    <p class="brand-tagline">Gestiona tus viajes y recargas de forma rápida y segura</p>
+
+    <!-- Tarjetas flotantes  -->
+    <div class="float-cards">
+
+      <div class="float-card">
+        <div class="float-icono ic-azul">🚇</div>
+        <div class="float-texto">
+          <strong>Viaje completado</strong>
+          <p>Albrook → San Miguelito</p>
+        </div>
+      </div>
+
+      <div class="float-card">
+        <div class="float-icono ic-naranja">💳</div>
+        <div class="float-texto">
+          <strong>Recarga exitosa</strong>
+          <p>$10.00 · Tarjeta ••4821</p>
+        </div>
+      </div>
+
+      <div class="float-card">
+        <div class="float-icono ic-verde">🚌</div>
+        <div class="float-texto">
+          <strong>Ruta S530</strong>
+          <p>Corredor Sur · En camino</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── Panel derecho: formulario ── -->
+  <div class="panel-der">
+    <h1>Inicia sesión</h1>
+    <p class="subtitulo">Bienvenido de nuevo</p>
+
+    <div class="alerta alerta-error mb-4" id="msgError" style="display:none">
+      ❌ Correo o contraseña incorrectos. Intenta de nuevo.
+    </div>
+
+    <form action="LoginServlet" method="POST" onsubmit="return validar()">
+
+      <div class="campo">
+        <label for="correo">Correo electrónico</label>
+        <input type="email" id="correo" name="correo"
+               placeholder="usuario@correo.com" required/>
+      </div>
+
+      <div class="campo">
+        <label for="contrasena">Contraseña</label>
+        <input type="password" id="contrasena" name="contrasena"
+               placeholder="••••••••" required/>
+      </div>
+
+      <div class="fila-opciones">
+        <label class="campo-check">
+          <input type="checkbox" name="recordar"/> Recordarme
+        </label>
+        <a href="recuperar.html" class="olvide">¿Olvidaste tu contraseña?</a>
+      </div>
+
+      <button type="submit" class="btn btn-primario btn-full">
+        Iniciar Sesión
+      </button>
+    </form>
+
+    <div class="separador">o</div>
+
+    <button class="btn btn-outline btn-full"
+            onclick="location.href='registro.html'">
+      Registrarse
+    </button>
+  </div>
+
+</div>
+
+<script>
+  const params = new URLSearchParams(window.location.search);
+  const err    = document.getElementById('msgError');
+
+  if (params.get('error') === '1') {
+    err.style.display = 'flex';
+    err.textContent   = '❌ Correo o contraseña incorrectos. Intenta de nuevo.';
+  } else if (params.get('error') === '2') {
+    err.style.display = 'flex';
+    err.textContent   = '⚠️ Error de conexión con la base de datos.';
+    err.className     = 'alerta alerta-aviso mb-4';
+  }
+
+  function validar() {
+    const correo = document.getElementById('correo').value.trim();
+    const pass   = document.getElementById('contrasena').value;
+    if (!correo || !pass) {
+      err.style.display = 'flex';
+      err.textContent   = '❌ Por favor completa todos los campos.';
+      return false;
+    }
+    err.style.display = 'none';
+    return true;
+  }
+</script>
+
+</body>
+</html>
