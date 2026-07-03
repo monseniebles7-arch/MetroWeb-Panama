@@ -158,13 +158,12 @@
             </c:forEach>
 
             <!-- Tarjeta para añadir una nueva tarjeta -->
-            <a href="registro.html" class="tarjeta-anadir">
+            <a href="Recarga_tarjetas.jsp" class="tarjeta-anadir">
                 <div class="tarjeta-anadir-contenido">
                     <p>Añadir tarjeta</p>
                     <div class="tarjeta-anadir-icono">+</div>
                 </div>
-            </a>
-
+        
         </div>
 
     </main>
