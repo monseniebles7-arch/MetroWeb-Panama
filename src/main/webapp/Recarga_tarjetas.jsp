@@ -21,6 +21,25 @@
             </div>
         </div>
 
+        <%
+            String error = request.getParameter("error");
+            if (error != null) {
+                if (error.equals("1")) {
+        %>
+                    <div class="alerta alerta-error" style="background-color: #f8d7da; color: #721c24; padding: 15px; border-radius: 8px; margin-top: 20px; border: 1px solid #f5c6cb;">
+                        ❌ No se pudo procesar la recarga. Inténtalo de nuevo.
+                    </div>
+        <%
+                } else if (error.equals("db")) {
+        %>
+                    <div class="alerta alerta-error" style="background-color: #f8d7da; color: #721c24; padding: 15px; border-radius: 8px; margin-top: 20px; border: 1px solid #f5c6cb;">
+                        ❌ Error de conexión con la base de datos de MetroWeb.
+                    </div>
+        <%
+                }
+            }
+        %>
+
         <form action="ProcesarRecargaServlet" method="post" style="margin-top: 40px;">
             
             <h4 style="color: var(--naranja); margin-bottom: 20px; border-bottom: 1px solid var(--gris-borde); padding-bottom: 8px;">
