@@ -14,15 +14,21 @@ CREATE TABLE RutaBus (id_ruta INT AUTO_INCREMENT PRIMARY KEY, codigo_ruta VARCHA
 -- 3. TABLAS PRINCIPALES
 CREATE TABLE Usuario (
     id_usuario INT AUTO_INCREMENT PRIMARY KEY,
-    nombre VARCHAR(50) NOT NULL, apellido VARCHAR(50) NOT NULL,
-    correo VARCHAR(100) NOT NULL UNIQUE, hash_contrasena VARCHAR(255) NOT NULL,
+    nombre VARCHAR(50) NOT NULL, 
+    apellido VARCHAR(50) NOT NULL,
+    correo VARCHAR(100) NOT NULL UNIQUE, 
+    hash_contrasena VARCHAR(255) NOT NULL,
     id_rol INT NOT NULL, FOREIGN KEY (id_rol) REFERENCES Rol(id_rol)
 );
 
 CREATE TABLE Tarjeta (
-    id_tarjeta INT AUTO_INCREMENT PRIMARY KEY, numero_tarjeta VARCHAR(25) NOT NULL UNIQUE,
-    alias_tarjeta VARCHAR(50), saldo DECIMAL(10,2) DEFAULT 0.00,
-    id_estado INT NOT NULL, id_tipo_tarjeta INT NOT NULL, id_usuario INT NOT NULL,
+    id_tarjeta INT AUTO_INCREMENT PRIMARY KEY, 
+    numero_tarjeta VARCHAR(25) NOT NULL UNIQUE,
+    alias_tarjeta VARCHAR(50), 
+    saldo DECIMAL(10,2) DEFAULT 0.00,
+    id_estado INT NOT NULL, 
+    id_tipo_tarjeta INT NOT NULL, 
+    id_usuario INT NOT NULL,
     FOREIGN KEY (id_estado) REFERENCES EstadoTarjeta(id_estado),
     FOREIGN KEY (id_tipo_tarjeta) REFERENCES TipoTarjeta(id_tipo_tarjeta),
     FOREIGN KEY (id_usuario) REFERENCES Usuario(id_usuario) ON DELETE CASCADE
@@ -58,7 +64,6 @@ CREATE TABLE HistorialSaldo (
 INSERT INTO Rol (nombre_rol) VALUES ('Administrador'), ('Usuario');
 INSERT INTO EstadoTarjeta (descripcion) VALUES ('Activa'), ('Bloqueada'), ('Vencida');
 INSERT INTO TipoTarjeta (descripcion) VALUES ('General'), ('Estudiante'), ('Jubilado');
--- Se eliminó 'Efectivo'
 INSERT INTO MetodoPago (descripcion) VALUES ('Tarjeta de Crédito'), ('Yappy'); 
 INSERT INTO TipoTransporte (descripcion) VALUES ('Metro'), ('Metrobús');
 
