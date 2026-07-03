@@ -68,3 +68,19 @@ INSERT INTO RutaBus (codigo_ruta, troncal) VALUES ('S420', 'S'), ('S421', 'S'), 
 
 INSERT INTO Usuario (nombre, apellido, correo, hash_contrasena, id_rol) 
 VALUES ('Admin', 'MetroWeb', 'admin@metroweb.com', '$2a$12$ESiFjOBy8yl5DOzQW2KLiOH2a0wETDWvqRd6g942SB/ce5Z5rC8y.', 1);
+
+-- 1. Insertar el Usuario de prueba (contraseña: 123)
+INSERT INTO Usuario (nombre, apellido, correo, hash_contrasena, id_rol) 
+VALUES ('Juan', 'Pérez', 'usuario1@metroweb.com', '$2a$12$6t3rQYdYenqL.UvPAGP6eex7fD41fA1A.4xT8zG2A.6A6A6A6A6A6', 2);
+
+-- 2. Asignarle una Tarjeta a Juan Pérez (con saldo inicial de $5.50)
+INSERT INTO Tarjeta (numero_tarjeta, alias_tarjeta, saldo, id_estado, id_tipo_tarjeta, id_usuario)
+VALUES ('91040997', 'Mi Tarjeta Principal', 5.50, 1, 1, LAST_INSERT_ID());
+
+-- 3. Insertar Movimientos de prueba en el Historial vinculados a esa tarjeta
+-- (Simulando los datos exactos que querías ver en pantalla)
+INSERT INTO HistorialSaldo (fecha_hora, monto_usado, saldo_restante, id_tarjeta) VALUES
+('2026-07-01 07:25:00', 0.00, 4.25, 1),
+('2026-07-01 09:46:00', 0.25, 4.00, 1),
+('2026-07-02 12:06:00', 0.25, 3.75, 1),
+('2026-07-02 16:36:00', 0.25, 3.50, 1);
