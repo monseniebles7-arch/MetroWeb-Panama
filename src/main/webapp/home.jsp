@@ -15,7 +15,7 @@
             ResultSet rs = null;
             try {
                 Class.forName("com.mysql.cj.jdbc.Driver");
-                cn = DriverManager.getConnection("jdbc:mysql://localhost:3306/MetroWebPanama2", "root", "");
+                cn = DriverManager.getConnection("jdbc:mysql://localhost:3306/MetroWebPanama", "root", "");
 
                 String sql = "SELECT id_usuario, nombre, hash_contrasena FROM Usuario WHERE correo = ?";
                 ps = cn.prepareStatement(sql);
@@ -29,7 +29,7 @@
                         session.setAttribute("id_usuario", rs.getInt("id_usuario"));
                         session.setAttribute("nombre_usuario", rs.getString("nombre"));
 
-                        response.sendRedirect("historia_viajes.jsp");
+                        response.sendRedirect("historial_viajes.jsp");
                         return;
                     } else {
                         mensajeError = "❌ Correo electrónico o contraseña incorrectos.";
