@@ -5,12 +5,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin - Inicio | MetroWeb Panamá</title>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/estilos.css">
+    <link rel="stylesheet" href="CSS/style.css"/>
 </head>
 <body>
 
 <!-- Llamada exclusiva al nuevo encabezado de administración -->
-<jsp:include page="header_admin.jsp" />
+<jsp:include page="componentes/header_admin.jsp" />
 
 <main class="admin-layout">
     <!-- BARRA LATERAL -->
@@ -79,7 +79,7 @@
 </main>
 
 <!-- Llamada al footer del proyecto -->
-<jsp:include page="footer.jsp" />
+<jsp:include page="componentes/footer.jsp" />
 
 </body>
 </html>
