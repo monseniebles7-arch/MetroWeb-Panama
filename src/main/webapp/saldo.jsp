@@ -50,7 +50,7 @@
                               gap: 8px;
                               box-shadow: 0 4px 12px rgba(232, 97, 10, 0.2);
                               transition: background-color 0.2s;">
-                        Recargar esta Tarjeta
+                        Recargar Tarjeta
                     </a>
                 </div>
 
