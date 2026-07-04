@@ -29,7 +29,7 @@
                         session.setAttribute("id_usuario", rs.getInt("id_usuario"));
                         session.setAttribute("nombre_usuario", rs.getString("nombre"));
 
-                        response.sendRedirect("historial_viajes.jsp");
+                        response.sendRedirect("usuario_inicio.jsp");
                         return;
                     } else {
                         mensajeError = "❌ Correo electrónico o contraseña incorrectos.";
