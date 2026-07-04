@@ -56,8 +56,8 @@ public class LoginServlet extends HttpServlet {
                     if (BCrypt.checkpw(contrasena, hashGuardado)) {
 
                         HttpSession session = request.getSession();
-                        session.setAttribute("idUsuario", rs.getInt("id_usuario"));
-                        session.setAttribute("nombreUsuario", rs.getString("nombre"));
+                        session.setAttribute("id_usuario", rs.getInt("id_usuario"));
+                        session.setAttribute("nombre_usuario", rs.getString("nombre"));
 
                         String nombreRol = rs.getString("nombre_rol");
 
@@ -87,6 +87,6 @@ public class LoginServlet extends HttpServlet {
     private void mostrarError(HttpServletRequest request, HttpServletResponse response, String mensaje)
             throws ServletException, IOException {
         request.setAttribute("error", mensaje);
-        request.getRequestDispatcher("home.jsp").forward(request, response);
+        request.getRequestDispatcher("/home.jsp").forward(request, response);
     }
 }
