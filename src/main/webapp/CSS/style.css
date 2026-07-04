@@ -698,10 +698,247 @@ footer {
 .d-flex { display: flex; align-items: center; gap: var(--sp-3); }
 .flex-between { display: flex; align-items: center; justify-content: space-between; }
 
-/* ═══════════════════════════
-   RESPONSIVE
-═══════════════════════════ */
 
+/* ═══════════════════════════════════════════════════════
+   ESTILOS ESPECÍFICOS DE LA HOME (Migrados desde home.html)
+   ═══════════════════════════════════════════════════════ */
+
+/* Hero section */
+.hero {
+  background: linear-gradient(135deg, var(--azul) 0%, #0f2549 100%);
+  padding: 80px 0;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Círculo decorativo del hero */
+.hero::after {
+  content: '';
+  position: absolute;
+  width: 500px; height: 500px;
+  border-radius: 50%;
+  background: rgba(232,97,10,0.08);
+  right: -150px; top: -150px;
+}
+
+.hero-inner {
+  width: min(1120px, 92vw);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  gap: 48px;
+}
+
+/* Título del hero en blanco con palabra naranja */
+.hero-texto h1 {
+  font-size: 40px;
+  color: var(--blanco);
+  margin-bottom: 16px;
+  line-height: 1.2;
+}
+
+.hero-texto h1 span { color: var(--naranja); }
+
+.hero-texto p {
+  color: rgba(255,255,255,0.70);
+  font-size: 17px;
+  margin-bottom: 32px;
+  line-height: 1.7;
+}
+
+.hero-btns {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* Caja blanca del formulario de login */
+.hero-login {
+  background: var(--blanco);
+  border-radius: 20px;
+  padding: 36px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+  position: relative;
+  z-index: 1;
+}
+
+.hero-login h3 {
+  font-size: 20px;
+  margin-bottom: 4px;
+}
+
+.hero-login .subtitulo {
+  font-size: 13px;
+  color: var(--gris-medio);
+  margin-bottom: 24px;
+}
+
+/* Formulario con fuente Georgia — diferente al body (Inter) */
+.hero-login form  { font-family: 'Georgia', serif; color: var(--azul); }
+.hero-login label { font-family: 'Georgia', serif; color: var(--azul); font-size: 13px; font-weight: bold; }
+.hero-login input { font-family: 'Georgia', serif; color: var(--azul); }
+
+/* Link olvidé contraseña */
+.footer-olvide {
+  font-size: 13px;
+  color: var(--naranja);
+  text-align: right;
+  display: block;
+  margin-top: -8px;
+  margin-bottom: 16px;
+}
+
+.login-pie {
+  text-align: center;
+  margin-top: 12px;
+  font-size: 13px;
+  color: var(--gris-medio);
+}
+
+.login-pie a { color: var(--naranja); font-weight: 500; }
+
+/* Sección estadísticas */
+.seccion-stats {
+  background: var(--azul);
+  padding: 48px 0;
+}
+
+.stats-inner {
+  width: min(1120px, 92vw);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 32px;
+  text-align: center;
+}
+
+.stat-item h2 {
+  font-size: 36px;
+  color: var(--naranja);
+  margin-bottom: 6px;
+}
+
+.stat-item p {
+  color: rgba(255,255,255,0.70);
+  font-size: 14px;
+  margin: 0;
+}
+
+/* Sección de noticias */
+.seccion-noticias {
+  padding: 64px 0;
+  background: var(--gris-fondo);
+}
+
+.noticias-inner {
+  width: min(1120px, 92vw);
+  margin: 0 auto;
+}
+
+.noticias-titulo { margin-bottom: 40px; }
+.noticias-titulo .etiqueta { margin-bottom: 8px; display: block; }
+
+/* Grid: 2 artículos a la izquierda, 1 video a la derecha */
+.noticias-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 24px;
+}
+
+.articulos-col {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Tarjeta de noticia */
+.noticia-card {
+  background: var(--blanco);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: var(--sombra);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.noticia-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--sombra-lg);
+}
+
+.noticia-body { padding: 24px; }
+
+.noticia-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.noticia-fecha { font-size: 12px; color: var(--gris-medio); }
+
+.noticia-body h3 { font-size: 18px; margin-bottom: 10px; line-height: 1.4; }
+
+.noticia-body p {
+  font-size: 14px;
+  color: var(--gris-medio);
+  line-height: 1.6;
+  margin-bottom: 16px;
+}
+
+.noticia-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--naranja);
+  text-decoration: none;
+}
+
+.noticia-link:hover { text-decoration: underline; }
+
+/* Tarjeta de video */
+.video-card {
+  background: var(--blanco);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: var(--sombra);
+  height: 100%;
+}
+
+.video-thumb {
+  position: relative;
+  background: #000;
+  aspect-ratio: 16/9;
+  overflow: hidden;
+}
+
+.video-thumb iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+.video-body { padding: 20px; }
+.video-body h3 { font-size: 16px; margin-bottom: 8px; }
+.video-body p  { font-size: 13px; color: var(--gris-medio); margin-bottom: 12px; }
+
+
+/* ── RESPONSIVE ADICIONAL HOME ── */
+@media (max-width: 900px) {
+  .hero-inner    { grid-template-columns: 1fr; }
+  .noticias-grid { grid-template-columns: 1fr; }
+  .stats-inner   { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 600px) {
+  .hero-texto h1 { font-size: 28px; }
+  .stats-inner   { grid-template-columns: 1fr 1fr; }
+  .nav-links a   { padding: 8px 10px; font-size: 13px; }
+}
+
+/* ── RESPONSIVE GLOBAL RE-APLICADO ── */
 @media (max-width: 768px) {
   h1 { font-size: var(--text-2xl); }
   h2 { font-size: var(--text-xl); }
@@ -712,12 +949,259 @@ footer {
   }
 
   .navbar-links { display: none; }
-
   .seccion { padding: var(--sp-10) 0; }
-
   .grid-cards { grid-template-columns: 1fr; }
 }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { transition: none !important; animation: none !important; }
+}
+
+/* ==========================================================================
+   Estilos de Tablas y Resúmenes (Historial y Saldos)
+   ========================================================================== */
+
+.tabla-resumen {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+    margin-bottom: 20px;
+    font-size: 14px;
+}
+
+.tabla-resumen th, 
+.tabla-resumen td {
+    border: 1px solid var(--gris-borde);
+    padding: 10px 14px;
+    text-align: left;
+}
+
+.tabla-resumen th {
+    background-color: var(--gris-fondo);
+    color: var(--azul);
+    font-weight: 600;
+}
+
+.tabla-header-central {
+    text-align: center !important;
+    background-color: var(--azul) !important;
+    color: var(--blanco) !important;
+}
+
+.txt-destaque {
+    font-weight: 600;
+    color: var(--azul);
+}
+
+/* ==========================================================================
+   Contenedores de Filtro y Botones
+   ========================================================================== */
+
+.filtro-container {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 1px dashed var(--gris-borde);
+}
+
+.filtro-container label {
+    white-space: nowrap;
+}
+
+.select-filtro {
+    padding: 6px 10px;     
+    font-size: 13px;       
+    border: 1px solid var(--gris-borde); 
+    border-radius: 4px; 
+    color: var(--azul); 
+    outline: none;
+    width: auto;           /* Asegura que no tome más ancho del necesario */
+    cursor: pointer;
+}
+
+.btn-naranja {
+    background-color: #e8610a; 
+    color: #ffffff; 
+    padding: 8px 20px; 
+    border: none; 
+    border-radius: 6px; 
+    font-weight: 600; 
+    font-size: 14px;
+    cursor: pointer;
+    box-shadow: 0 3px 8px rgba(232, 97, 10, 0.2);
+    transition: background-color 0.2s;
+}
+
+.btn-naranja:hover {
+    background-color: #cc5500;
+}
+
+/* ── Estilos unificados para la sección de Registro ── */
+.registro-body {
+  background: linear-gradient(135deg, var(--azul) 0%, #0f2549 100%);
+  min-height: calc(100vh - 200px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px;
+}
+
+.registro-card {
+  background: var(--blanco);
+  border-radius: 20px;
+  padding: 40px 48px;
+  width: min(520px, 100%);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+}
+
+.registro-card form { 
+  font-family: 'Georgia', serif; 
+  color: var(--azul); 
+}
+
+.registro-card label { 
+  font-family: 'Georgia', serif; 
+  color: var(--azul); 
+  font-size: 13px; 
+  font-weight: bold; 
+}
+
+.campo-fila { 
+  display: grid; 
+  grid-template-columns: 1fr 1fr; 
+  gap: 16px; 
+}
+
+.separador { 
+  text-align: center; 
+  font-size: 12px; 
+  color: var(--gris-medio); 
+  margin: 12px 0; 
+}
+
+/* ─── ALERTAS DEL SISTEMA (HOME Y REGISTRO) ─── */
+.alerta {
+  font-weight: bold;
+  margin-bottom: 15px;
+  font-size: 14px;
+}
+.alerta-error {
+  color: #d63031;
+}
+.alerta-exito {
+  color: #2ecc71;
+}
+
+/* ─── VISTA DE REGISTRO UNIFICADA ─── */
+.registro-body {
+  background: linear-gradient(135deg, var(--azul) 0%, #0f2549 100%);
+  min-height: calc(100vh - 200px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px;
+}
+
+.registro-card {
+  background: var(--blanco);
+  border-radius: 20px;
+  padding: 40px 48px;
+  width: min(520px, 100%);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+}
+
+.registro-card form { 
+  font-family: 'Georgia', serif; 
+  color: var(--azul); 
+}
+
+.registro-card label { 
+  font-family: 'Georgia', serif; 
+  color: var(--azul); 
+  font-size: 13px; 
+  font-weight: bold; 
+}
+
+.campo-fila { 
+  display: grid; 
+  grid-template-columns: 1fr 1fr; 
+  gap: 16px; 
+}
+
+.separador { 
+  text-align: center; 
+  font-size: 12px; 
+  color: var(--gris-medio); 
+  margin: 12px 0; 
+}
+
+.btn-volver {
+  text-decoration: none; 
+  color: var(--gris-medio); 
+  font-size: 13px;
+}
+
+.btn-outline {
+  display: inline-flex;      
+  align-items: center;       
+  justify-content: center;   
+  width: 100%;
+  height: 44px;              
+  border: 2px solid var(--azul);
+  background: transparent;
+  color: var(--azul);
+  border-radius: 8px;        
+  font-family: 'Georgia', serif;
+  font-size: 14px;
+  font-weight: bold;
+  text-decoration: none;     
+  box-sizing: border-box;    
+  cursor: pointer;
+}
+
+.btn-outline:hover {
+  background-color: rgba(15, 37, 73, 0.05);
+}
+
+/* ─── HISTORIAL DE VIAJES ─── */
+.card-historial {
+  padding: 40px;
+}
+
+.tabla-resumen td.ancho-etiqueta {
+  width: 20%;
+}
+
+.tabla-resumen td.ancho-valor {
+  width: 30%;
+}
+
+.txt-naranja-bold {
+  color: var(--naranja);
+  font-weight: bold;
+}
+
+.subtitulo-seccion {
+  color: var(--azul);
+  margin-top: 10px;
+  margin-bottom: 20px;
+  font-size: 18px;
+}
+
+.txt-bold {
+  font-weight: bold;
+}
+
+/* ─── SOBRE NOSOTROS ─── */
+.seccion-equipo {
+  margin-top: 60px;
+}
+
+.avatar-equipo {
+  width: 100%;
+  aspect-ratio: 1/1;
+  object-fit: cover;
+  background-color: var(--gris-borde);
 }

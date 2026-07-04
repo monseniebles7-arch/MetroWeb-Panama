@@ -6,35 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Saldo y Movimientos - MetroWeb Panamá</title>
     <link rel="stylesheet" href="CSS/style.css">
-    <style>
-        /* Estilos específicos para estructurar las tablas del wireframe */
-        .tabla-resumen {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 15px;
-            margin-bottom: 20px;
-            font-size: 14px;
-        }
-        .tabla-resumen th, .tabla-resumen td {
-            border: 1px solid var(--gris-borde);
-            padding: 10px 14px;
-            text-align: left;
-        }
-        .tabla-resumen th {
-            background-color: var(--gris-fondo);
-            color: var(--azul);
-            font-weight: 600;
-        }
-        .tabla-header-central {
-            text-align: center !important;
-            background-color: var(--azul) !important;
-            color: var(--blanco) !important;
-        }
-        .txt-destaque {
-            font-weight: 600;
-            color: var(--azul);
-        }
-    </style>
 </head>
 <body>
 
@@ -48,7 +19,6 @@
                 <p style="color: var(--gris-medio); font-size: 14px; margin-bottom: 5px; font-weight: 500;">Usuario</p>
                 <h2 style="color: var(--azul); margin-bottom: 25px;">Estado de tarjeta</h2>
 
-                <!-- TABLA 1: Estado de la Tarjeta -->
                 <table class="tabla-resumen">
                     <tbody>
                         <tr>
@@ -66,7 +36,6 @@
                     </tbody>
                 </table>
 
-                <!-- Botón de acción rápida para recargar con fondo naranja y letras blancas -->
                 <div style="display: flex; justify-content: flex-end; margin-top: 5px; margin-bottom: 35px;">
                     <a href="Recarga_tarjetas.jsp" 
                        style="text-decoration: none; 
@@ -81,13 +50,12 @@
                               gap: 8px;
                               box-shadow: 0 4px 12px rgba(232, 97, 10, 0.2);
                               transition: background-color 0.2s;">
-                        	Recargar esta Tarjeta
+                        Recargar Tarjeta
                     </a>
                 </div>
 
                 <h2 style="color: var(--azul); margin-top: 20px; margin-bottom: 25px;">Resumen del último trimestre</h2>
 
-                <!-- TABLA 2: Uso de Buses y Metro -->
                 <table class="tabla-resumen">
                     <thead>
                         <tr>
@@ -116,7 +84,6 @@
                     </tbody>
                 </table>
 
-                <!-- TABLA 3: Recargas -->
                 <table class="tabla-resumen">
                     <thead>
                         <tr>
