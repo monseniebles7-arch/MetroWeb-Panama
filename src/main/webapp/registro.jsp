@@ -25,7 +25,7 @@
 
             try {
                 Class.forName("com.mysql.cj.jdbc.Driver");
-                cn = DriverManager.getConnection("jdbc:mysql://localhost:3306/MetroWebPanama", "root", "");
+                cn = DriverManager.getConnection("jdbc:mysql://localhost:3306/MetroWebPanama2", "root", "");
 
                 String sqlCheck = "SELECT id_usuario FROM Usuario WHERE correo = ?";
                 psCheck = cn.prepareStatement(sqlCheck);
