@@ -15,7 +15,7 @@
             ResultSet rs = null;
             try {
                 Class.forName("com.mysql.cj.jdbc.Driver");
-                cn = DriverManager.getConnection("jdbc:mysql://localhost:3306/MetroWebPanama2", "root", "");
+                cn = DriverManager.getConnection("jdbc:mysql://localhost:3306/metrowebPanama2", "root", "");
 
                 String sql = "SELECT id_usuario, nombre, hash_contrasena FROM Usuario WHERE correo = ?";
                 ps = cn.prepareStatement(sql);
