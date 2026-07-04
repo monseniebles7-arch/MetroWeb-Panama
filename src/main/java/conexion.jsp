@@ -8,11 +8,7 @@ import java.sql.DriverManager;
  */
 public class Conexion {
 
-<<<<<<< HEAD
-    private static final String URL = "jdbc:mysql://localhost:3306/Metrowebpanama2";
-=======
-    private static final String URL = "jdbc:mysql://localhost:3306/metroweb";
->>>>>>> 620432fbf01abe7ffd0cdcf3f2172ea29323019a
+    private static final String URL = "jdbc:mysql://localhost:3306/MetroWebPanama2";
     private static final String USUARIO = "root";
     private static final String PASSWORD = "";
 

@@ -1,52 +1,14 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page import="java.sql.*" %>
-<%@ page import="org.mindrot.jbcrypt.BCrypt" %>
-<%
-    String mensajeError = null;
-
-    if ("POST".equalsIgnoreCase(request.getMethod())) {
-        request.setCharacterEncoding("UTF-8");
-        String correo = request.getParameter("correo");
-        String contrasena = request.getParameter("contrasena");
-
-        if (correo != null && contrasena != null) {
-            Connection cn = null;
-            PreparedStatement ps = null;
-            ResultSet rs = null;
-            try {
-                Class.forName("com.mysql.cj.jdbc.Driver");
-                cn = DriverManager.getConnection("jdbc:mysql://localhost:3306/MetroWebPanama2", "root", "");
-
-                String sql = "SELECT id_usuario, nombre, hash_contrasena FROM Usuario WHERE correo = ?";
-                ps = cn.prepareStatement(sql);
-                ps.setString(1, correo.trim());
-                rs = ps.executeQuery();
-
-                if (rs.next()) {
-                    String hashBD = rs.getString("hash_contrasena");
-
-                    if (BCrypt.checkpw(contrasena, hashBD)) {
-                        session.setAttribute("id_usuario", rs.getInt("id_usuario"));
-                        session.setAttribute("nombre_usuario", rs.getString("nombre"));
-
-                        response.sendRedirect("historia_viajes.jsp");
-                        return;
-                    } else {
-                        mensajeError = "❌ Correo electrónico o contraseña incorrectos.";
-                    }
-                } else {
-                    mensajeError = "❌ Correo electrónico o contraseña incorrectos.";
-                }
-            } catch (Exception e) {
-                mensajeError = "⚠️ Error de conexión con el sistema: " + e.getMessage();
-            } finally {
-                if (rs != null) try { rs.close(); } catch(Exception e){}
-                if (ps != null) try { ps.close(); } catch(Exception e){}
-                if (cn != null) try { cn.close(); } catch(Exception e){}
-            }
-        }
-    }
-%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<!--
+    El login ya NO se procesa aquí con scriptlets.
+    Ahora lo maneja LoginServlet (ver /LoginServlet), que:
+    - Verifica correo y contraseña contra la base de datos.
+    - Guarda en sesión: id_usuario, nombre_usuario y rol.
+    - Redirige a usuario_inicio.jsp o admin_inicio.jsp según el rol.
+    - Si hay error, reenvía (forward) de vuelta a esta misma página
+      con el atributo "error" seteado, que se muestra abajo.
+-->
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -82,19 +44,19 @@
         <h3>Inicia sesión</h3>
         <p class="subtitulo">Accede a tu cuenta MetroWeb</p>
 
-        <% if (mensajeError != null) { %>
+        <c:if test="${not empty error}">
           <div class="alerta alerta-error">
-            <%= mensajeError %>
+            ❌ ${error}
           </div>
-        <% } %>
+        </c:if>
 
-        <% if ("1".equals(request.getParameter("registro_exito"))) { %>
+        <c:if test="${param.registro_exito == '1'}">
           <div class="alerta alerta-exito">
             ✅ Cuenta creada exitosamente. ¡Inicia sesión!
           </div>
-        <% } %>
+        </c:if>
 
-        <form action="home.jsp" method="POST">
+        <form action="${pageContext.request.contextPath}/LoginServlet" method="POST">
           <div class="campo">
             <label for="correo">Correo electrónico</label>
             <input type="email" id="correo" name="correo" placeholder="usuario@correo.com" required/>
