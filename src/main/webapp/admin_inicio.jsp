@@ -1,36 +1,20 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin - Inicio | MetroWeb Panamá</title>
-    <link rel="stylesheet" href="CSS/style.css"/>
+   <link rel="stylesheet" href="CSS/style.css"/>
 </head>
 <body>
 
-<!-- Llamada exclusiva al nuevo encabezado de administración -->
+<!-- Llamada al encabezado de administración horizontal -->
 <jsp:include page="componentes/header_admin.jsp" />
 
-<main class="admin-layout">
-    <!-- BARRA LATERAL -->
-    <aside class="admin-sidebar">
-        <div class="sidebar-perfil">
-            <div class="avatar-admin">A</div>
-            <div>
-                <h4>Administrador</h4>
-                <p class="text-xs mb-0" style="color: rgba(255,255,255,0.6);">Panel de Control</p>
-            </div>
-        </div>
-        <nav class="sidebar-menu">
-            <a href="${pageContext.request.contextPath}/admin_inicio.jsp" class="sidebar-link activo">Vista General</a>
-            <a href="${pageContext.request.contextPath}/admin_usuarios.jsp" class="sidebar-link">Gestionar Usuarios</a>
-            <a href="${pageContext.request.contextPath}/admin_tarjetas.jsp" class="sidebar-link">Gestionar Tarjetas</a>
-            <a href="${pageContext.request.contextPath}/admin_reportes.jsp" class="sidebar-link">Reportes</a>
-        </nav>
-    </aside>
-
-    <!-- CUERPO DE LA VISTA -->
+<!-- Eliminamos el aside lateral. El contenedor ahora envuelve solo el cuerpo principal -->
+<main class="admin-layout-horizontal">
     <section class="admin-body">
         <div class="panel-header">
             <h2>Métricas del Sistema</h2>
@@ -78,7 +62,6 @@
     </section>
 </main>
 
-<!-- Llamada al footer del proyecto -->
 <jsp:include page="componentes/footer.jsp" />
 
 </body>

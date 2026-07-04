@@ -1207,118 +1207,30 @@ footer {
 }
 
 /* ==========================================================================
-   ESTILOS EXCLUSIVOS: PANEL ADMINISTRADOR
+   ESTILOS EXCLUSIVOS: PANEL ADMINISTRADOR (MENÚ HORIZONTAL SUPERIOR)
    ========================================================================== */
 
-/* Layout Estructural en 2 columnas */
-.admin-layout {
-  display: grid;
-  grid-template-columns: 280px 1fr;
-  min-height: calc(100vh - 152px); /* Descuenta alturas fijas del header/banner */
-  background: var(--gris-fondo);
-}
-
-/* Contenedor de la barra lateral */
-.admin-sidebar {
-  background: var(--azul);
-  color: var(--blanco);
-  padding: var(--sp-6) var(--sp-4);
-  display: flex;
-  flex-direction: column;
-  gap: var(--sp-6);
-  border-right: 4px solid var(--naranja);
-}
-
-.sidebar-perfil {
-  display: flex;
-  align-items: center;
-  gap: var(--sp-3);
-  padding-bottom: var(--sp-4);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.avatar-admin {
-  width: 45px;
-  height: 45px;
-  background: var(--naranja);
-  color: var(--blanco);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 700;
-  font-family: var(--font-display);
-  font-size: var(--text-lg);
-}
-
-.sidebar-perfil h4 {
-  color: var(--blanco);
-  font-size: var(--text-base);
-  margin-bottom: 2px;
-}
-
-.sidebar-menu {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sp-2);
-}
-
-/* Botones interactivos de la barra lateral */
-.sidebar-link {
-  background: transparent;
-  border: none;
-  color: rgba(255, 255, 255, 0.8);
-  padding: 14px 16px;
-  text-align: left;
-  font-family: var(--font-body);
-  font-size: var(--text-sm);
-  font-weight: 500;
-  border-radius: var(--radio);
-  cursor: pointer;
-  transition: all 0.2s ease;
+/* Contenedor principal que se adapta debajo del header_admin */
+.admin-layout-horizontal {
+  display: block;
   width: 100%;
-}
-
-.sidebar-link:hover {
-  background: rgba(255, 255, 255, 0.08);
-  color: var(--blanco);
-  padding-left: 20px;
-}
-
-.sidebar-link.activo {
-  background: var(--naranja);
-  color: var(--blanco);
-  font-weight: 600;
-  box-shadow: var(--sombra-sm);
-}
-
-/* Panel Central de Datos */
-.admin-body {
-  padding: var(--sp-8);
+  min-height: calc(100vh - 180px); /* Ajusta la altura restando banner + nav */
   background: var(--gris-fondo);
+  box-sizing: border-box;
+}
+
+/* Área central de datos (Tablas, métricas, etc.) */
+.admin-layout-horizontal .admin-body {
+  max-width: 1200px; /* Centra el contenido para que no se estire demasiado en pantallas anchas */
+  margin: 0 auto;
+  padding: var(--sp-8) var(--sp-4);
 }
 
 .panel-header {
   margin-bottom: var(--sp-6);
 }
 
-/* Control dinámico: Oculta los contenedores inactivos */
-.pestana-contenido {
-  display: none !important;
-}
-
-/* Despliega únicamente el panel activo */
-.pestana-contenido.activo {
-  display: block !important;
-  animation: panelFade 0.3s ease-in-out;
-}
-
-@keyframes panelFade {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* Marcos Flotantes (Modales para Formularios) */
+/* Marcos Flotantes (Modales para Formularios si los usas mediante redirección) */
 .modal-overlay {
   position: fixed;
   top: 0; left: 0;
@@ -1349,13 +1261,7 @@ footer {
   to { transform: scale(1); opacity: 1; }
 }
 
-/* Adaptabilidad para pantallas reducidas (Responsividad) */
-@media (max-width: 900px) {
-  .admin-layout {
-    grid-template-columns: 1fr;
-  }
-  .admin-sidebar {
-    border-right: none;
-    border-bottom: 4px solid var(--naranja);
-  }
+/* Estilo opcional por si quieres resaltar un enlace activo en el menú superior */
+.nav-links a:hover {
+  color: var(--naranja) !important;
 }
