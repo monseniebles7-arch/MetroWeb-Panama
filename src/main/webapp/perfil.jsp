@@ -125,8 +125,23 @@
                     </div>
                 </div> 
 
-                <!-- Botón de acceso directo modificado con fondo naranja y letras blancas -->
-                <div style="display: flex; justify-content: center; margin-top: 40px;">
+                <div style="display: flex; justify-content: center; gap: 15px; margin-top: 40px;">
+                    <a href="saldo.jsp?accion=agregar" 
+                       style="text-decoration: none; 
+                              background-color: var(--azul); 
+                              color: #ffffff; 
+                              padding: 12px 32px; 
+                              border-radius: 8px; 
+                              font-weight: 600; 
+                              font-size: 15px; 
+                              display: inline-flex; 
+                              align-items: center; 
+                              gap: 8px;
+                              box-shadow: 0 4px 12px rgba(15, 37, 73, 0.15);
+                              transition: background-color 0.2s;">
+                              Agregar Tarjeta
+                    </a>
+
                     <a href="Recarga_tarjetas.jsp" 
                        style="text-decoration: none; 
                               background-color: #e8610a; 
