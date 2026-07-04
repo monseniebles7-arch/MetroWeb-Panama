@@ -1,4 +1,110 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page import="java.sql.*" %>
+<%@ page import="org.mindrot.jbcrypt.BCrypt" %>
+<%
+    // =========================================================================
+    // 1. CONFIGURACIÓN DE SESIÓN Y VARIABLES DE CONTROL
+    // =========================================================================
+    
+    // Se obtiene el ID del usuario logueado en la sesión activa
+    Integer idUsuarioLogueado = (Integer) session.getAttribute("id_usuario");
+    if (idUsuarioLogueado == null) {
+        idUsuarioLogueado = 1; // ID de respaldo por si estás probando sin login previo
+    }
+
+    String mensajeAlerta = null;
+    boolean esExito = false;
+
+    // Variables globales para poblar el formulario (se rellenan en el bloque GET)
+    String nombre = "", apellido = "", correo = "";
+
+    // =========================================================================
+    // 2. BLOQUE POST: PROCESAR LA ACTUALIZACIÓN DEL PERFIL
+    // =========================================================================
+    if ("POST".equalsIgnoreCase(request.getMethod())) {
+        request.setCharacterEncoding("UTF-8");
+        
+        // Captura de los datos enviados desde los inputs del formulario
+        String inputNombre = request.getParameter("nombre");
+        String inputApellido = request.getParameter("apellido");
+        String inputPassword = request.getParameter("password");
+        String inputConfirmar = request.getParameter("confirmar");
+
+        // Validaciones basadas en tu código de registro de referencia
+        if (inputPassword != null && !inputPassword.isEmpty() && inputPassword.length() < 8) {
+            mensajeAlerta = "❌ La nueva contraseña debe tener al menos 8 caracteres.";
+        } else if (inputPassword != null && !inputPassword.isEmpty() && !inputPassword.equals(inputConfirmar)) {
+            mensajeAlerta = "❌ Las contraseñas ingresadas no coinciden.";
+        } else {
+            Connection cn = null;
+            PreparedStatement psUpdate = null;
+
+            try {
+                // Conexión exacta a tu base de datos de referencia: metrowebpanama2
+                Class.forName("com.mysql.cj.jdbc.Driver");
+                cn = DriverManager.getConnection("jdbc:mysql://localhost:3306/metrowebpanama2", "root", "");
+
+                // Si el usuario escribió una nueva contraseña, se hashea y se actualiza todo
+                if (inputPassword != null && !inputPassword.isEmpty()) {
+                    String contrasenaHasheada = BCrypt.hashpw(inputPassword, BCrypt.gensalt(12));
+                    String sqlUpdate = "UPDATE Usuario SET nombre=?, apellido=?, hash_contrasena=? WHERE id_usuario=?";
+                    psUpdate = cn.prepareStatement(sqlUpdate);
+                    psUpdate.setString(1, inputNombre.trim());
+                    psUpdate.setString(2, inputApellido.trim());
+                    psUpdate.setString(3, contrasenaHasheada);
+                    psUpdate.setInt(4, idUsuarioLogueado);
+                } else {
+                    // Si dejó los campos de contraseña vacíos, solo se actualizan Nombre y Apellido
+                    String sqlUpdate = "UPDATE Usuario SET nombre=?, apellido=? WHERE id_usuario=?";
+                    psUpdate = cn.prepareStatement(sqlUpdate);
+                    psUpdate.setString(1, inputNombre.trim());
+                    psUpdate.setString(2, inputApellido.trim());
+                    psUpdate.setInt(3, idUsuarioLogueado);
+                }
+
+                psUpdate.executeUpdate();
+                mensajeAlerta = "✅ ¡Cambios guardados con éxito!";
+                esExito = true;
+            } catch (Exception e) {
+                mensajeAlerta = "⚠️ Error al guardar en el sistema: " + e.getMessage();
+            } finally {
+                // Cierre seguro de recursos en el bloque finally
+                if (psUpdate != null) try { psUpdate.close(); } catch(Exception e){}
+                if (cn != null) try { cn.close(); } catch(Exception e){}
+            }
+        }
+    }
+
+    // =========================================================================
+    // 3. BLOQUE GET: CARGAR LOS DATOS ACTUALES DEL USUARIO EN TIEMPO REAL
+    // =========================================================================
+    Connection cnGet = null;
+    PreparedStatement psSelect = null;
+    ResultSet rsSelect = null;
+
+    try {
+        Class.forName("com.mysql.cj.jdbc.Driver");
+        cnGet = DriverManager.getConnection("jdbc:mysql://localhost:3306/metrowebpanama2", "root", "");
+
+        // Consulta para traer la información basándonos únicamente en los campos de tu registro
+        String sqlSelect = "SELECT nombre, apellido, correo FROM Usuario WHERE id_usuario = ?";
+        psSelect = cnGet.prepareStatement(sqlSelect);
+        psSelect.setInt(1, idUsuarioLogueado);
+        rsSelect = psSelect.executeQuery();
+
+        if (rsSelect.next()) {
+            nombre = rsSelect.getString("nombre");
+            apellido = rsSelect.getString("apellido");
+            correo = rsSelect.getString("correo");
+        }
+    } catch (Exception e) {
+        mensajeAlerta = "⚠️ Error al cargar los datos: " + e.getMessage();
+    } finally {
+        if (rsSelect != null) try { rsSelect.close(); } catch(Exception e){}
+        if (psSelect != null) try { psSelect.close(); } catch(Exception e){}
+        if (cnGet != null) try { cnGet.close(); } catch(Exception e){}
+    }
+%>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -16,78 +122,53 @@
         <div class="perfil-container">
             <div class="perfil-card">
 
-                <div class="perfil-top" style="display: flex; align-items: center; gap: 20px; margin-bottom: 35px;">
-                    <div class="perfil-avatar">
-                        <img src="PNGS/avatar.png" alt="Usuario" style="height: 80px; width: 80px; border-radius: 50%; object-fit: cover;">
-                    </div>
+                <div class="perfil-top">
                     <div class="perfil-info">
-                        <h2 style="color: var(--azul); margin: 0;">Juan Pérez</h2>
-                        <p style="color: var(--gris-medio); margin: 5px 0 0 0; font-size: 14px;">Administrador de la cuenta MetroWeb Panamá</p>
+                        <h2><%= nombre %> <%= apellido %></h2>
+                        <p>Administrador de la cuenta MetroWeb Panamá</p>
                     </div>
                 </div>
 
-                <h3 class="perfil-titulo" style="color: var(--naranja); margin-bottom: 25px; border-bottom: 1px solid var(--gris-borde); padding-bottom: 8px;">
+                <% if (mensajeAlerta != null) { %>
+                    <div class="alerta <%= esExito ? "alerta-exito" : "alerta-error" %>">
+                        <%= mensajeAlerta %>
+                    </div>
+                <% } %>
+
+                <h3 class="perfil-titulo">
                     Información Personal
                 </h3>
 
-                <form action="ActualizarPerfilServlet" method="post">
+                <form action="perfil.jsp" method="post">
                     <div class="perfil-grid">
 
                         <div class="grupo">
                             <label for="nombre" class="fw-600">Nombre</label>
-                            <input type="text" id="nombre" name="nombre" value="Juan">
+                            <input type="text" id="nombre" name="nombre" value="<%= nombre %>" required>
                         </div>
 
                         <div class="grupo">
                             <label for="apellido" class="fw-600">Apellido</label>
-                            <input type="text" id="apellido" name="apellido" value="Pérez">
+                            <input type="text" id="apellido" name="apellido" value="<%= apellido %>" required>
                         </div>
 
                         <div class="grupo grupo-full">
                             <label for="correo" class="fw-600">Correo electrónico</label>
-                            <input type="email" id="correo" name="correo" value="juan@email.com">
-                        </div>
-
-                        <div class="grupo">
-                            <label for="telefono" class="fw-600">Teléfono</label>
-                            <input type="text" id="telefono" name="telefono" value="6000-0000">
-                        </div>
-
-                        <div class="grupo">
-                            <label for="cedula" class="fw-600">Cédula</label>
-                            <input type="text" id="cedula" name="cedula" value="8-888-888">
-                        </div>
-
-                        <div class="grupo">
-                            <label for="fechaNacimiento" class="fw-600">Fecha de nacimiento</label>
-                            <input type="date" id="fechaNacimiento" name="fechaNacimiento" value="2002-06-18">
-                        </div>
-
-                        <div class="grupo">
-                            <label for="sexo" class="fw-600">Sexo</label>
-                            <select id="select-sexo" name="sexo">
-                                <option selected>Masculino</option>
-                                <option>Femenino</option>
-                            </select>
-                        </div>
-
-                        <div class="grupo grupo-full">
-                            <label for="direccion" class="fw-600">Dirección</label>
-                            <input type="text" id="direccion" name="direccion" value="Ciudad de Panamá">
+                            <input type="email" id="correo" name="correo" value="<%= correo %>" readonly class="bg-gris-fondo">
                         </div>
 
                         <div class="grupo">
                             <label for="password" class="fw-600">Nueva contraseña</label>
-                            <input type="password" id="password" name="password">
+                            <input type="password" id="password" name="password" placeholder="Mínimo 8 caracteres">
                         </div>
 
                         <div class="grupo">
                             <label for="confirmar" class="fw-600">Confirmar contraseña</label>
-                            <input type="password" id="confirmar" name="confirmar">
+                            <input type="password" id="confirmar" name="confirmar" placeholder="Repite tu contraseña">
                         </div>
                     </div>
 
-                    <div class="perfil-botones" style="margin-top: 35px; display: flex; justify-content: center; gap: 15px;">
+                    <div class="perfil-botones">
                         <button class="btn btn-secundario" type="reset">
                             Cancelar
                         </button>
@@ -97,36 +178,8 @@
                     </div>
                 </form>
 
-                <hr style="margin: 50px 0; border: none; border-top: 1px solid var(--gris-borde);">
-
-                <h3 class="perfil-titulo" style="color: var(--naranja); margin-bottom: 25px; border-bottom: 1px solid var(--gris-borde); padding-bottom: 8px;">
-                    Información de la Cuenta
-                </h3>
-
-                <div class="perfil-grid">
-                    <div class="grupo">
-                        <label class="fw-600">Fecha de registro</label>
-                        <input type="text" value="15/01/2026" readonly style="background-color: var(--gris-fondo);">
-                    </div>
-
-                    <div class="grupo">
-                        <label class="fw-600">Estado</label>
-                        <input type="text" value="Cuenta Activa" readonly style="background-color: var(--gris-fondo);">
-                    </div>
-
-                    <div class="grupo">
-                        <label class="fw-600">Tarjetas registradas</label>
-                        <input type="text" value="2 tarjetas" readonly style="background-color: var(--gris-fondo);">
-                    </div>
-
-                    <div class="grupo">
-                        <label class="fw-600">Último acceso</label>
-                        <input type="text" value="29/06/2026 - 5:15 PM" readonly style="background-color: var(--gris-fondo);">
-                    </div>
-                </div> 
-
                 <div style="display: flex; justify-content: center; gap: 15px; margin-top: 40px;">
-                    <a href="saldo.jsp?accion=agregar" 
+                    <a href="agregar-tarjeta.jsp" 
                        style="text-decoration: none; 
                               background-color: var(--azul); 
                               color: #ffffff; 
