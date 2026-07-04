@@ -39,7 +39,7 @@
         <div class="flex-between mb-6" style="display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap;">
             
             <!-- Formulario de Búsqueda Nativo (Filtro que recarga la misma página) -->
-            <form action="admin_usuarios.jsp" method="GET" style="display: flex; gap: 8px; flex-grow: 1; max-width: 400px;">
+            <form action="gestion_usuarios.jsp" method="GET" style="display: flex; gap: 8px; flex-grow: 1; max-width: 400px;">
                 <input type="text" name="txtBuscar" value="<%= (txtBuscar != null) ? txtBuscar : "" %>" placeholder="🔍 Buscar por nombre o correo..." 
                        style="width: 100%; padding: 10px 14px; border: 1px solid #ccc; border-radius: var(--radio); font-family: var(--font-body);">
                 <button type="submit" class="btn btn-primario" style="padding: 0 16px;">Buscar</button>
