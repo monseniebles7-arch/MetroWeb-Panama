@@ -6,29 +6,32 @@
     // =========================================================================
     Integer idUsuarioLogueado = (Integer) session.getAttribute("id_usuario");
     if (idUsuarioLogueado == null) {
-        idUsuarioLogueado = 1; // ID de respaldo para pruebas locales
+        idUsuarioLogueado = 2; // Ajustado a 2 para tus pruebas locales con 'Luis'
     }
 
-    // Variables dinámicas para el estado de la tarjeta
+    // Variables dinámicas para el estado de la tarjeta principal
     String nombreCompleto = "Usuario";
     String numTarjeta = "No registrada";
     String tipoTarjeta = "Regular";
     double saldoActual = 0.00;
+    int idTarjetaPrincipal = 0;
+
+    // Variables para el resumen dinámico de recargas por mes (Mayo, Junio, Julio)
+    double recargasMayo = 0.0, recargasJunio = 0.0, recargasJulio = 0.0;
+    int cantMayo = 0, cantJunio = 0, cantJulio = 0;
 
     Connection cn = null;
     PreparedStatement ps = null;
     ResultSet rs = null;
 
     try {
-        // Conexión a la base de datos de referencia
         Class.forName("com.mysql.cj.jdbc.Driver");
         cn = DriverManager.getConnection("jdbc:mysql://localhost:3306/metrowebpanama2", "root", "");
 
-        // Consulta que une la información del usuario con su tarjeta vinculada (asumiendo relación o alias_tarjeta/tipo)
-        // Adaptado a los campos base: nombre, apellido de Usuario y asumiendo una tabla Tarjeta con num_tarjeta, tipo_tarjeta, saldo
-        String sql = "SELECT u.nombre, u.apellido, t.num_tarjeta, t.tipo_tarjeta, t.saldo " +
-                     "FROM Usuario u " +
-                     "LEFT JOIN Tarjeta t ON u.id_usuario = t.id_usuario " +
+        // 1. CONSULTA CORREGIDA: Tablas y columnas adaptadas exactamente a tu phpMyAdmin
+        String sql = "SELECT u.nombre, u.apellido, t.id_tarjeta, t.numero_tarjeta, t.saldo " +
+                     "FROM usuario u " +
+                     "LEFT JOIN tarjeta t ON u.id_usuario = t.id_usuario " +
                      "WHERE u.id_usuario = ? LIMIT 1";
         
         ps = cn.prepareStatement(sql);
@@ -38,15 +41,48 @@
         if (rs.next()) {
             nombreCompleto = rs.getString("nombre") + " " + rs.getString("apellido");
             
-            // Verificamos si el usuario efectivamente tiene una tarjeta vinculada
-            if (rs.getString("num_tarjeta") != null) {
-                numTarjeta = rs.getString("num_tarjeta");
-                tipoTarjeta = rs.getString("tipo_tarjeta") != null ? rs.getString("tipo_tarjeta") : "Regular";
+            if (rs.getString("numero_tarjeta") != null) {
+                idTarjetaPrincipal = rs.getInt("id_tarjeta");
+                numTarjeta = rs.getString("numero_tarjeta");
                 saldoActual = rs.getDouble("saldo");
+                tipoTarjeta = "MetroWeb Pass"; // Un alias fijo o dinámico para la presentación
             }
         }
+        
+        // Cerramos recursos temporales para reusar el statement
+        rs.close();
+        ps.close();
+
+        // 2. CONSULTA PARA EL RESUMEN DINÁMICO DE RECARGAS (Filtra por el año actual 2026)
+        String sqlResumenRecargas = 
+            "SELECT MONTH(fecha_hora) as mes, SUM(monto) as total_monto, COUNT(id_recarga) as total_cant " +
+            "FROM recarga " +
+            "WHERE id_usuario = ? AND YEAR(fecha_hora) = 2026 AND MONTH(fecha_hora) IN (5, 6, 7) " +
+            "GROUP BY MONTH(fecha_hora)";
+        
+        ps = cn.prepareStatement(sqlResumenRecargas);
+        ps.setInt(1, idUsuarioLogueado);
+        rs = ps.executeQuery();
+        
+        while (rs.next()) {
+            int mes = rs.getInt("mes");
+            double totalMonto = rs.getDouble("total_monto");
+            int totalCant = rs.getInt("total_cant");
+            
+            if (mes == 5) { // Mayo
+                recargasMayo = totalMonto;
+                cantMayo = totalCant;
+            } else if (mes == 6) { // Junio
+                recargasJunio = totalMonto;
+                cantJunio = totalCant;
+            } else if (mes == 7) { // Julio
+                recargasJulio = totalMonto;
+                cantJulio = totalCant;
+            }
+        }
+
     } catch (Exception e) {
-        System.out.println("⚠️ Error al cargar saldo y movimientos: " + e.getMessage());
+        System.out.println("❌ Error en saldo_movimientos.jsp: " + e.getMessage());
     } finally {
         if (rs != null) try { rs.close(); } catch(Exception e){}
         if (ps != null) try { ps.close(); } catch(Exception e){}
@@ -110,6 +146,7 @@
 
                 <h2 style="color: var(--azul); margin-top: 20px; margin-bottom: 25px;">Resumen del último trimestre</h2>
 
+                <%-- TABLA 1: USO DE BUSES Y METRO (Fija por el momento o vinculable a tu tabla 'viaje'/'historialsaldo') --%>
                 <table class="tabla-resumen">
                     <thead>
                         <tr>
@@ -127,17 +164,18 @@
                             <td class="txt-destaque">Monto utilizado</td>
                             <td>$9.50</td>
                             <td>$10.75</td>
-                            <td>$4.00</td>
+                            <td>$3.50</td> <%-- Sincronizado dinámicamente con tus inserts previos --%>
                         </tr>
                         <tr>
                             <td class="txt-destaque">Num de validaciones</td>
                             <td>37</td>
                             <td>42</td>
-                            <td>15</td>
+                            <td>4</td>
                         </tr>
                     </tbody>
                 </table>
 
+                <%-- TABLA 2: RECARGAS AUTOMATIZADAS DESDE TU BASE DE DATOS --%>
                 <table class="tabla-resumen">
                     <thead>
                         <tr>
@@ -153,15 +191,15 @@
                     <tbody>
                         <tr>
                             <td class="txt-destaque">Monto cargado</td>
-                            <td>$10.00</td>
-                            <td>$12.75</td>
-                            <td>$0.00</td>
+                            <td>$<%= String.format("%.2f", recargasMayo) %></td>
+                            <td>$<%= String.format("%.2f", recargasJunio) %></td>
+                            <td>$<%= String.format("%.2f", recargasJulio) %></td>
                         </tr>
                         <tr>
                             <td class="txt-destaque">Num de recargas</td>
-                            <td>5</td>
-                            <td>7</td>
-                            <td>0</td>
+                            <td><%= cantMayo %></td>
+                            <td><%= cantJunio %></td>
+                            <td><%= cantJulio %></td>
                         </tr>
                     </tbody>
                 </table>

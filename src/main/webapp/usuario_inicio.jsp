@@ -1,7 +1,9 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page import="java.sql.*" %>
 <%
     // Control de seguridad: Si no hay usuario en sesión, redirige al Home
-    if (session.getAttribute("id_usuario") == null) {
+    Integer idUsuarioLogueado = (Integer) session.getAttribute("id_usuario");
+    if (idUsuarioLogueado == null) {
         response.sendRedirect("home.jsp");
         return;
     }
@@ -17,74 +19,91 @@
 </head>
 <body>
 
-    <%-- jsp:include: Carga e inserta dinámicamente el componente común header.jsp (menú superior) --%>
     <jsp:include page="componentes/header.jsp" />
 
-    <%-- Etiqueta <main>: Delimita el área de contenido principal de la página, aplicando márgenes estándar --%>
     <main class="contenedor seccion">
         
-        <%-- Bloque superior del Dashboard: Contenedor que maneja la estructura flexbox para dar el saludo de bienvenida --%>
         <div class="dashboard-bienvenida">
             <div>
-                <%-- Etiqueta decorativa pequeña para indicar la sección actual --%>
                 <p class="txt-gris-propio">Panel de Control</p>
-                <%-- <%= nombreUsuario %>: Inyecta dinámicamente el nombre guardado en la sesión del servidor --%>
                 <h2>¡Hola, <%= nombreUsuario %>!</h2>
             </div>
         </div>
 
         <h3>Mis Tarjetas Asociadas</h3>
 
-        <%-- Grid Contenedor: Aplica una grilla de CSS que ordena automáticamente las tarjetas en columnas (se adapta a PCs y celulares) --%>
         <div class="tarjetas-contenedor-grid">
             
-            <%-- PRIMERA TARJETA (Simulada como activa o principal) --%>
-            <div class="tarjeta-transporte">
-                <%-- Cabecera interna de la tarjeta de transporte físico --%>
-                <div class="tarjeta-header">
-                    <div>
-                        <%-- Marca decorativa del sistema de transporte --%>
-                        <span class="tarjeta-marca">MetroWeb</span>
-                        <%-- Espacio asignado para mostrar el identificador o número serial de la tarjeta --%>
-                        <div class="tarjeta-numero">Nº 91040997</div>
-                    </div>
-                    <%-- Etiqueta (Badge) azul para resaltar que esta es la tarjeta primordial del usuario --%>
-                    <span class="badge badge-azul">Principal</span>
-                </div>
-                <%-- Cuerpo central de la tarjeta destinado exclusivamente a mostrar las finanzas --%>
-                <div class="tarjeta-body-saldo">
-                    <div class="tarjeta-saldo-label">Saldo Disponible</div>
-                    <%-- Monto monetario formateado que posee actualmente el plástico --%>
-                    <div class="tarjeta-saldo-monto">$3.50</div>
-                </div>
-                <%-- Enlace que funciona como botón de acción para enviar al usuario directo al formulario de recarga monetaria --%>
-                <a href="Recarga_tarjetas.jsp" class="btn-recarga-tarjeta">
-                    Recargar esta tarjeta
-                </a>
-            </div>
+            <%
+                Connection cn = null;
+                PreparedStatement ps = null;
+                ResultSet rs = null;
+                
+                try {
+                    Class.forName("com.mysql.cj.jdbc.Driver");
+                    cn = DriverManager.getConnection("jdbc:mysql://localhost:3306/metrowebpanama2", "root", "");
+                    
+                    // Consultamos las tarjetas asociadas al usuario logueado usando la tabla en minúsculas
+                    String sql = "SELECT id_tarjeta, numero_tarjeta, alias_tarjeta, saldo FROM tarjeta WHERE id_usuario = ?";
+                    ps = cn.prepareStatement(sql);
+                    ps.setInt(1, idUsuarioLogueado);
+                    rs = ps.executeQuery();
+                    
+                    boolean tieneTarjetas = false;
+                    int contador = 0;
+                    
+                    while(rs.next()) {
+                        tieneTarjetas = true;
+                        contador++;
+                        
+                        int idTarjeta = rs.getInt("id_tarjeta");
+                        String numeroTarjeta = rs.getString("numero_tarjeta");
+                        String aliasTarjeta = rs.getString("alias_tarjeta");
+                        double saldo = rs.getDouble("saldo");
+                        
+                        // La primera tarjeta será la "Principal", las siguientes serán "Secundaria"
+                        String tipoBadge = (contador == 1) ? "Principal" : "Secundaria";
+            %>
+                        <%-- TARJETA DINÁMICA --%>
+                        <div class="tarjeta-transporte">
+                            <div class="tarjeta-header">
+                                <div>
+                                    <%-- Usamos el alias de la tarjeta (Metro, Metrobús, Trabajo, etc.) --%>
+                                    <span class="tarjeta-marca"><%= aliasTarjeta %></span>
+                                    <div class="tarjeta-numero">Nº <%= numeroTarjeta %></div>
+                                </div>
+                                <span class="badge badge-azul"><%= tipoBadge %></span>
+                            </div>
+                            <div class="tarjeta-body-saldo">
+                                <div class="tarjeta-saldo-label">Saldo Disponible</div>
+                                <div class="tarjeta-saldo-monto">$<%= String.format("%.2f", saldo) %></div>
+                            </div>
+                            <a href="Recarga_tarjetas.jsp" class="btn-recarga-tarjeta">
+                                Recargar esta tarjeta
+                            </a>
+                        </div>
+            <%
+                    }
+                    
+                    if (!tieneTarjetas) {
+            %>
+                        <div style="grid-column: span 2; padding: 20px; background: #f9f9f9; border-radius: 8px; border: 1px dashed var(--gris-borde); text-align: center;">
+                            <p style="color: #666;">Aún no tienes tarjetas registradas.</p>
+                        </div>
+            <%
+                    }
+                    
+                } catch(Exception e) {
+                    System.out.println("❌ Error al cargar el panel de tarjetas: " + e.getMessage());
+                } finally {
+                    if (rs != null) try { rs.close(); } catch(Exception e){}
+                    if (ps != null) try { ps.close(); } catch(Exception e){}
+                    if (cn != null) try { cn.close(); } catch(Exception e){}
+                }
+            %>
 
-            <%-- SEGUNDA TARJETA (Simulada como secundaria o de respaldo) --%>
-            <div class="tarjeta-transporte">
-                <div class="tarjeta-header">
-                    <div>
-                        <span class="tarjeta-marca">MetroWeb</span>
-                        <div class="tarjeta-numero">Nº 45871293</div>
-                    </div>
-                    <%-- Etiqueta informativa indicando que es una tarjeta complementaria --%>
-                    <span class="badge badge-azul">Secundaria</span>
-                </div>
-                <div class="tarjeta-body-saldo">
-                    <div class="tarjeta-saldo-label">Saldo Disponible</div>
-                    <div class="tarjeta-saldo-monto">$1.25</div>
-                </div>
-                <a href="Recarga_tarjetas.jsp" class="btn-recarga-tarjeta">
-                    Recargar esta tarjeta
-                </a>
-            </div>
-
-            <%-- BOTÓN O TARJETA DE ACCESO DIRECTO: Estilizado con bordes discontinuos (dashed) para invitar a agregar más elementos --%>
+            <%-- BOTÓN O TARJETA DE ACCESO DIRECTO --%>
             <a href="agregar-tarjeta.jsp" class="tarjeta-agregar-nueva">
-                <%-- Signo matemático de suma estilizado en tamaño grande --%>
                 <span class="tarjeta-agregar-icono">+</span>
                 Agregar nueva tarjeta
             </a>
@@ -93,7 +112,6 @@
 
     </main>
 
-    <%-- jsp:include: Carga modular e integra la estructura del pie de página común (footer.jsp) --%>
     <jsp:include page="componentes/footer.jsp" />
 
 </body>
