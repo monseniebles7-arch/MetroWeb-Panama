@@ -94,14 +94,26 @@
                                 String correo = rs.getString("correo");
                     %>
                                 <tr>
-                                    <td class="fw-600"><%= nombreCompleto %></td>
-                                    <td><%= correo %></td>
-                                    <td class="text-center">
-                                        <!-- Enlaces pasando el ID por la URL de forma nativa -->
-                                        <a href="form_usuario.jsp?id=<%= idUsuario %>" class="btn btn-ghost btn-sm" style="text-decoration: none; margin-right: 4px;">Editar</a>
-                                        <a href="eliminar_usuario.jsp?id=<%= idUsuario %>" class="btn btn-outline btn-sm" style="color: var(--naranja); border-color: var(--naranja); text-decoration: none;">Eliminar</a>
-                                    </td>
-                                </tr>
+    <td class="fw-600"><%= nombreCompleto %></td>
+    <td><%= correo %></td>
+    <td class="text-center">
+        <div style="display: flex; gap: 12px; justify-content: center; align-items: center;">
+            <!-- Botón Editar -->
+            <a href="form_usuario.jsp?id=<%= idUsuario %>" 
+               class="btn btn-ghost btn-sm" 
+               style="text-decoration: none; width: 90px; text-align: center; box-sizing: border-box; display: inline-block;">
+               Editar
+            </a>
+            
+            <!-- Botón Eliminar -->
+            <a href="eliminar_usuario.jsp?id=<%= idUsuario %>" 
+               class="btn btn-outline btn-sm" 
+               style="color: var(--naranja); border-color: var(--naranja); text-decoration: none; width: 90px; text-align: center; box-sizing: border-box; display: inline-block;">
+               Eliminar
+            </a>
+        </div>
+    </td>
+</tr>
                     <%
                             }
                         } catch (Exception e) {
