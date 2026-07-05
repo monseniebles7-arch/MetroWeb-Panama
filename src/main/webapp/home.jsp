@@ -13,24 +13,55 @@
             Connection cn = null;
             PreparedStatement ps = null;
             ResultSet rs = null;
+            
+            PreparedStatement psCount = null;
+            ResultSet rsCount = null;
+
             try {
                 Class.forName("com.mysql.cj.jdbc.Driver");
                 cn = DriverManager.getConnection("jdbc:mysql://localhost:3306/metrowebpanama2", "root", "");
 
-                String sql = "SELECT id_usuario, nombre, hash_contrasena FROM Usuario WHERE correo = ?";
+                String sql = "SELECT id_usuario, nombre, hash_contrasena, id_rol FROM Usuario WHERE correo = ?";
                 ps = cn.prepareStatement(sql);
                 ps.setString(1, correo.trim());
                 rs = ps.executeQuery();
 
                 if (rs.next()) {
-                    String hashBD = rs.getString("hash_contrasena");
+                    String hashBD = rs.getString("hash_contrasena").trim();
+                    String passIngresada = contrasena.trim();
 
-                    if (BCrypt.checkpw(contrasena, hashBD)) {
-                        session.setAttribute("id_usuario", rs.getInt("id_usuario"));
+                    if (BCrypt.checkpw(passIngresada, hashBD)) {
+                        
+                        int idUsuario = rs.getInt("id_usuario");
+                        int idRol = rs.getInt("id_rol");
+
+                        session.setAttribute("id_usuario", idUsuario);
                         session.setAttribute("nombre_usuario", rs.getString("nombre"));
+                        session.setAttribute("id_rol", idRol);
 
-                        response.sendRedirect("usuario_inicio.jsp");
-                        return;
+                        if (idRol == 1) {
+                            response.sendRedirect("admin_inicio.jsp");
+                            return;
+                        } else {
+                            String sqlCount = "SELECT COUNT(*) AS total FROM Tarjeta WHERE id_usuario = ?";
+                            psCount = cn.prepareStatement(sqlCount);
+                            psCount.setInt(1, idUsuario);
+                            rsCount = psCount.executeQuery();
+
+                            int cantidadTarjetas = 0;
+                            if (rsCount.next()) {
+                                cantidadTarjetas = rsCount.getInt("total");
+                            }
+
+                            if (cantidadTarjetas == 0) {
+                                response.sendRedirect("agregar-tarjeta.jsp");
+                                return;
+                            } else {
+                                response.sendRedirect("pagina_principal.jsp");
+                                return;
+                            }
+                        }
+
                     } else {
                         mensajeError = "❌ Correo electrónico o contraseña incorrectos.";
                     }
@@ -40,6 +71,8 @@
             } catch (Exception e) {
                 mensajeError = "⚠️ Error de conexión con el sistema: " + e.getMessage();
             } finally {
+                if (rsCount != null) try { rsCount.close(); } catch(Exception e){}
+                if (psCount != null) try { psCount.close(); } catch(Exception e){}
                 if (rs != null) try { rs.close(); } catch(Exception e){}
                 if (ps != null) try { ps.close(); } catch(Exception e){}
                 if (cn != null) try { cn.close(); } catch(Exception e){}
@@ -59,8 +92,6 @@
   
 </head>
 <body>
-
-
 
 <main>
   <section class="hero">
@@ -84,7 +115,7 @@
 
         <% if (mensajeError != null) { %>
           <div class="alerta alerta-error">
-            <%= mensajeError %>
+             <%= mensajeError %>
           </div>
         <% } %>
 
@@ -110,7 +141,7 @@
         </form>
 
         <div class="login-pie">
-          ¿No tienes cuenta? <a href="registro.jsp">Regístrate gratis</a>
+           ¿No tienes cuenta? <a href="registro.jsp">Regístrate gratis</a>
         </div>
       </div>
 
@@ -126,7 +157,6 @@
     </div>
   </section>
 
- <!-- Noticias: 2 artículos + 1 video -->
   <section class="seccion-noticias">
     <div class="noticias-inner">
 
@@ -137,29 +167,24 @@
 
       <div class="noticias-grid">
 
-        <!-- Columna izquierda: 2 artículos -->
         <div class="articulos-col">
 
-          <!-- Artículo 1 -->
           <article class="noticia-card">
             <div class="noticia-body">
               <div class="noticia-meta">
                 <span class="badge badge-azul">Artículo</span>
                 <span class="noticia-fecha">📅 10 de junio, 2026</span>
               </div>
-              <!-- Título usa fuente Sora (display), diferente al cuerpo Inter -->
               <h3>MiBus reporta un incremento de más de 7.2 millones de pasajeros movilizados en los primeros cinco meses de 2026</h3>
               <p>
                 MiBus, empresa encargada de la operación del transporte público de pasajeros en la Ciudad de Panamá y San Miguelito, informa que, durante los primeros cinco meses de 2026 (enero a mayo), el sistema ha movilizado un total de 61,874,885 pasajeros. Esta cifra representa un aumento significativo en comparación con el mismo periodo del año 2025, cuando se registraron 54,578,710 usuarios. Esto se traduce en un balance positivo de +7,296,175 pasajeros adicionales que han utilizado la red de MiBus este año frente al año pasado.
               </p>
-              <!-- Enlace a la fuente original -->
               <a href="https://www.mibus.com.pa/noticia/mibus-reporta-un-incremento-de-mas-de-7-2-millones-de-pasajeros-movilizados-en-los-primeros-cinco-meses-de-2026/" target="_blank" class="noticia-link">
                 Leer noticia completa →
               </a>
             </div>
           </article>
 
-          <!-- Artículo 2 -->
           <article class="noticia-card">
             <div class="noticia-body">
               <div class="noticia-meta">
@@ -170,7 +195,6 @@
               <p>
                 El Metro de Panamá, S.A. informa que no se recibieron propuestas para la licitación del proyecto del Teleférico en Panamá y San Miguelito, por parte de los dos consorcios precalificados. La entidad detalló que en los últimos meses mantuvo mesas de trabajo interinstitucionales, atendió consultas y aplicó varias adendas al pliego de cargos con el fin de flexibilizar las condiciones. Sin embargo, a pesar de que ambos consorcios cuentan con una experiencia técnica comprobada, no fue posible lograr la bancarización del proyecto bajo el modelo de concesión administrativa planteado.
               </p>
-              <!-- Enlace a la fuente original -->
               <a href="https://www.telemetro.com/nacionales/teleferico-panama-y-san-miguelito-queda-propuestas-licitacion-informo-el-metro-panama-n6080574" target="_blank" class="noticia-link">
                 Leer noticia completa →
               </a>
@@ -179,12 +203,11 @@
 
         </div>
 
-        <!-- Columna derecha: 1 video de YouTube -->
         <div class="video-col">
           <div class="video-card">
             <div class="video-thumb">
               <iframe
-                src="https://www.youtube.com/watch?v=IuyetberOiQ"
+                src="https://www.youtube.com/embed/IuyetberOiQ"
                 title="Metro de Panamá — Video oficial"
                 allow="accelerometer; autoplay; clipboard-write;
                        encrypted-media; gyroscope; picture-in-picture"
@@ -200,7 +223,6 @@
               <p>
                 La Línea 3 del Metro de Panamá pasó de ser un desafío a convertirse en una conquista compartida. Cada paso, cada avance, es el reflejo de lo que somos capaces de lograr cuando trabajamos juntos. ¡Panamá avanza con orgullo y visión de futuro!
               </p>
-              <!-- Enlace a la fuente original -->
               <a href="https://www.youtube.com/watch?v=IuyetberOiQ"
                  target="_blank" class="noticia-link">
                 Ver en YouTube →
