@@ -178,7 +178,7 @@
 </main>
 
 <footer>
-    <jsp:include page="componentes/footer.jsp" />
+    <jsp:include page="componentes/footer_admin.jsp" />
 </footer>
 
 </body>

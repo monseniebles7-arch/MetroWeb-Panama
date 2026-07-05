@@ -281,7 +281,7 @@
 </main>
 
 <!-- Inclusión del Pie de Página Común -->
-<jsp:include page="componentes/footer.jsp" />
+<jsp:include page="componentes/footer_admin.jsp" />
 
 </body>
 </html>
