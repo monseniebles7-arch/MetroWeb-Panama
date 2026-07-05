@@ -1388,8 +1388,8 @@ div.tarjeta-transporte.tarjeta-solida-naranja {
 }
 
 div.tarjeta-transporte.tarjeta-solida-verde {
-    background: #38EF7D; /* Verde brillante */
-    background-color: #38EF7D;
+    background: #00a859; /* Verde brillante */
+    background-color: #00a859;
 }
 
 /* 2. Control estricto de fuentes internas para evitar que el CSS viejo las pinte de gris */
@@ -1402,7 +1402,7 @@ div.tarjeta-transporte.tarjeta-solida-naranja * {
 div.tarjeta-transporte.tarjeta-solida-verde *,
 div.tarjeta-transporte.tarjeta-solida-verde .tarjeta-numero,
 div.tarjeta-transporte.tarjeta-solida-verde .tarjeta-saldo-label {
-    color: var(--negro);
+    color: var(--blanco);
 }
 
 /* 3. Estilo para el botón único "Editar" en la esquina superior de la tarjeta */
