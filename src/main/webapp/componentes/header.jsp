@@ -1,11 +1,19 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%
+    // Obtenemos la URI actual (ejemplo: /MetroWeb/usuario_inicio.jsp)
+    String uriActual = request.getRequestURI();
+    
+    // Extraemos solo el nombre del archivo final para evaluar cuál está cargado
+    String paginaActual = uriActual.substring(uriActual.lastIndexOf("/") + 1);
+%>
 <link rel="stylesheet" href="CSS/style.css">
 
 <header>
   <div class="banner">
     <div class="banner-inner">
       <div class="banner-logo">
-        <a href="perfil.jsp">
-          <img src="PNGS/logometro.png" alt="MetroWeb Panam�"/>
+        <a href="usuario_inicio.jsp">
+          <img src="PNGS/logometro.png" alt="MetroWeb Panamá"/>
         </a>
       </div>
     </div>
@@ -17,10 +25,45 @@
       <div class="nav-espacio"></div>
 
       <ul class="nav-links">
-        <li><a href="perfil.jsp" class="activo">Perfil</a></li>
-        <li><a href="historial_viajes.jsp">Saldo y movimientos</a></li>
-        <li><a href="nosotros.jsp">Sobre nosotros</a></li>
-        <li><a href="cerrar_sesion.jsp">Cerrar sesi�n</a></li>
+        <%-- 1. Inicio --%>
+        <li>
+          <a href="usuario_inicio.jsp" class="<%= paginaActual.equals("usuario_inicio.jsp") ? "activo" : "" %>">Inicio</a>
+        </li>
+        
+        <%-- 2. Perfil --%>
+        <li>
+          <a href="perfil.jsp" class="<%= paginaActual.equals("perfil.jsp") ? "activo" : "" %>">Perfil</a>
+        </li>
+        
+        <%-- 3. Recargar Tarjeta --%>
+        <li>
+          <a href="Recarga_tarjetas.jsp" class="<%= paginaActual.equals("Recarga_tarjetas.jsp") ? "activo" : "" %>">Recargar Tarjeta</a>
+        </li>
+        
+        <%-- 4. Agregar Tarjeta --%>
+        <li>
+          <a href="agregar-tarjeta.jsp" class="<%= paginaActual.equals("agregar-tarjeta.jsp") ? "activo" : "" %>">Agregar Tarjeta</a>
+        </li>
+        
+        <%-- 5. Saldo --%>
+        <li>
+          <a href="saldo.jsp" class="<%= paginaActual.equals("saldo.jsp") ? "activo" : "" %>">Saldo</a>
+        </li>
+        
+        <%-- 6. Historial y Movimientos --%>
+        <li>
+          <a href="historial_viajes.jsp" class="<%= paginaActual.equals("historial_viajes.jsp") ? "activo" : "" %>">Historial y Movimientos</a>
+        </li>
+        
+        <%-- 7. Sobre nosotros --%>
+        <li>
+          <a href="nosotros.jsp" class="<%= paginaActual.equals("nosotros.jsp") ? "activo" : "" %>">Sobre nosotros</a>
+        </li>
+        
+        <%-- 8. Cerrar sesión (Sin efecto permanente por diseño) --%>
+        <li>
+          <a href="cerrar_sesion.jsp">Cerrar sesión</a>
+        </li>
       </ul>
 
       <div class="nav-iconos">

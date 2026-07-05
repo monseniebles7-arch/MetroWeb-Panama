@@ -2,23 +2,30 @@
 <%@ page import="java.sql.*" %>
 <%
     // =========================================================================
-    // CONFIGURACIÓN DE SESIÓN Y CARGA DE DATOS DE TARJETA
+    // 1. CONTROL DE SESIÓN Y CAPTURA DE PARÁMETROS
     // =========================================================================
     Integer idUsuarioLogueado = (Integer) session.getAttribute("id_usuario");
     if (idUsuarioLogueado == null) {
-        idUsuarioLogueado = 2; // Ajustado a 2 para tus pruebas locales con 'Luis'
+        idUsuarioLogueado = 2; // ID de respaldo para tus pruebas locales con 'Luis'
     }
 
-    // Variables dinámicas para el estado de la tarjeta principal
+    // Capturamos la tarjeta seleccionada desde el menú desplegable
+    String idTarjetaParam = request.getParameter("idTarjeta");
+    int idTarjetaSeleccionada = (idTarjetaParam != null && !idTarjetaParam.isEmpty()) ? Integer.parseInt(idTarjetaParam) : 0;
+
+    // Variables dinámicas para el estado de la tarjeta activa
     String nombreCompleto = "Usuario";
     String numTarjeta = "No registrada";
     String tipoTarjeta = "Regular";
     double saldoActual = 0.00;
-    int idTarjetaPrincipal = 0;
 
-    // Variables para el resumen dinámico de recargas por mes (Mayo, Junio, Julio)
+    // Variables para el resumen dinámico de RECARGAS por mes
     double recargasMayo = 0.0, recargasJunio = 0.0, recargasJulio = 0.0;
     int cantMayo = 0, cantJunio = 0, cantJulio = 0;
+
+    // Variables para el resumen dinámico de HISTORIAL DE USO (Buses y Metro)
+    double usoMayo = 0.0, usoJunio = 0.0, usoJulio = 0.0;
+    int valMayo = 0, valJunio = 0, valJulio = 0;
 
     Connection cn = null;
     PreparedStatement ps = null;
@@ -28,61 +35,92 @@
         Class.forName("com.mysql.cj.jdbc.Driver");
         cn = DriverManager.getConnection("jdbc:mysql://localhost:3306/metrowebpanama2", "root", "");
 
-        // 1. CONSULTA CORREGIDA: Tablas y columnas adaptadas exactamente a tu phpMyAdmin
-        String sql = "SELECT u.nombre, u.apellido, t.id_tarjeta, t.numero_tarjeta, t.saldo " +
-                     "FROM usuario u " +
-                     "LEFT JOIN tarjeta t ON u.id_usuario = t.id_usuario " +
-                     "WHERE u.id_usuario = ? LIMIT 1";
-        
-        ps = cn.prepareStatement(sql);
+        // =========================================================================
+        // 2. OBTENER INFORMACIÓN DEL USUARIO (Independiente de la tarjeta)
+        // =========================================================================
+        String sqlUsuario = "SELECT nombre, apellido FROM usuario WHERE id_usuario = ?";
+        ps = cn.prepareStatement(sqlUsuario);
         ps.setInt(1, idUsuarioLogueado);
         rs = ps.executeQuery();
-
         if (rs.next()) {
             nombreCompleto = rs.getString("nombre") + " " + rs.getString("apellido");
-            
-            if (rs.getString("numero_tarjeta") != null) {
-                idTarjetaPrincipal = rs.getInt("id_tarjeta");
-                numTarjeta = rs.getString("numero_tarjeta");
-                saldoActual = rs.getDouble("saldo");
-                tipoTarjeta = "MetroWeb Pass"; // Un alias fijo o dinámico para la presentación
-            }
         }
-        
-        // Cerramos recursos temporales para reusar el statement
         rs.close();
         ps.close();
 
-        // 2. CONSULTA PARA EL RESUMEN DINÁMICO DE RECARGAS (Filtra por el año actual 2026)
-        String sqlResumenRecargas = 
-            "SELECT MONTH(fecha_hora) as mes, SUM(monto) as total_monto, COUNT(id_recarga) as total_cant " +
-            "FROM recarga " +
-            "WHERE id_usuario = ? AND YEAR(fecha_hora) = 2026 AND MONTH(fecha_hora) IN (5, 6, 7) " +
-            "GROUP BY MONTH(fecha_hora)";
-        
-        ps = cn.prepareStatement(sqlResumenRecargas);
-        ps.setInt(1, idUsuarioLogueado);
-        rs = ps.executeQuery();
-        
-        while (rs.next()) {
-            int mes = rs.getInt("mes");
-            double totalMonto = rs.getDouble("total_monto");
-            int totalCant = rs.getInt("total_cant");
+        // =========================================================================
+        // 3. SELECCIÓN DE LA TARJETA POR DEFECTO (Si no se ha elegido ninguna aún)
+        // =========================================================================
+        if (idTarjetaSeleccionada == 0) {
+            String sqlPrimera = "SELECT id_tarjeta FROM tarjeta WHERE id_usuario = ? LIMIT 1";
+            ps = cn.prepareStatement(sqlPrimera);
+            ps.setInt(1, idUsuarioLogueado);
+            rs = ps.executeQuery();
+            if (rs.next()) {
+                idTarjetaSeleccionada = rs.getInt("id_tarjeta");
+            }
+            rs.close();
+            ps.close();
+        }
+
+        // =========================================================================
+        // 4. CARGA DE DATOS Y ESTADÍSTICAS DE LA TARJETA SELECCIONADA
+        // =========================================================================
+        if (idTarjetaSeleccionada > 0) {
             
-            if (mes == 5) { // Mayo
-                recargasMayo = totalMonto;
-                cantMayo = totalCant;
-            } else if (mes == 6) { // Junio
-                recargasJunio = totalMonto;
-                cantJunio = totalCant;
-            } else if (mes == 7) { // Julio
-                recargasJulio = totalMonto;
-                cantJulio = totalCant;
+            // Datos generales de la tarjeta activa
+            String sqlTarjeta = "SELECT numero_tarjeta, saldo, alias_tarjeta FROM tarjeta WHERE id_tarjeta = ? AND id_usuario = ?";
+            ps = cn.prepareStatement(sqlTarjeta);
+            ps.setInt(1, idTarjetaSeleccionada);
+            ps.setInt(2, idUsuarioLogueado);
+            rs = ps.executeQuery();
+            if (rs.next()) {
+                numTarjeta = rs.getString("numero_tarjeta");
+                saldoActual = rs.getDouble("saldo");
+                tipoTarjeta = rs.getString("alias_tarjeta") != null ? rs.getString("alias_tarjeta") : "MetroWeb Pass";
+            }
+            rs.close();
+            ps.close();
+
+            // Resumen de RECARGAS filtrado por el año 2026 y meses Mayo(5), Junio(6), Julio(7)
+            String sqlResumenRecargas = 
+                "SELECT MONTH(fecha_hora) as mes, SUM(monto) as total_monto, COUNT(id_recarga) as total_cant " +
+                "FROM recarga " +
+                "WHERE id_tarjeta = ? AND YEAR(fecha_hora) = 2026 AND MONTH(fecha_hora) IN (5, 6, 7) " +
+                "GROUP BY MONTH(fecha_hora)";
+            
+            ps = cn.prepareStatement(sqlResumenRecargas);
+            ps.setInt(1, idTarjetaSeleccionada);
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                int mes = rs.getInt("mes");
+                if (mes == 5) { recargasMayo = rs.getDouble("total_monto"); cantMayo = rs.getInt("total_cant"); }
+                else if (mes == 6) { recargasJunio = rs.getDouble("total_monto"); cantJunio = rs.getInt("total_cant"); }
+                else if (mes == 7) { recargasJulio = rs.getDouble("total_monto"); cantJulio = rs.getInt("total_cant"); }
+            }
+            rs.close();
+            ps.close();
+
+            // Resumen de USO (Buses y Metro) obtenido de tu tabla historialsaldo
+            String sqlResumenUso = 
+                "SELECT MONTH(fecha_hora) as mes, SUM(monto_used) as total_uso, COUNT(id_historial) as total_val " +
+                "FROM historialsaldo " +
+                "WHERE id_tarjeta = ? AND YEAR(fecha_hora) = 2026 AND MONTH(fecha_hora) IN (5, 6, 7) " +
+                "GROUP BY MONTH(fecha_hora)";
+            
+            ps = cn.prepareStatement(sqlResumenUso);
+            ps.setInt(1, idTarjetaSeleccionada);
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                int mes = rs.getInt("mes");
+                if (mes == 5) { usoMayo = rs.getDouble("total_uso"); valMayo = rs.getInt("total_val"); }
+                else if (mes == 6) { usoJunio = rs.getDouble("total_uso"); valJunio = rs.getInt("total_val"); }
+                else if (mes == 7) { usoJulio = rs.getDouble("total_uso"); valJulio = rs.getInt("total_val"); }
             }
         }
 
     } catch (Exception e) {
-        System.out.println("❌ Error en saldo_movimientos.jsp: " + e.getMessage());
+        System.out.println("❌ Error en saldo.jsp: " + e.getMessage());
     } finally {
         if (rs != null) try { rs.close(); } catch(Exception e){}
         if (ps != null) try { ps.close(); } catch(Exception e){}
@@ -106,6 +144,42 @@
         <div class="card">
             <div class="card-body" style="padding: 40px;">
                 
+                <div style="margin-bottom: 25px; background: #fdf6f0; padding: 15px; border-radius: 8px; border: 1px solid var(--gris-borde);">
+                    <form method="GET" action="saldo.jsp" id="formSeleccionarTarjeta">
+                        <label for="idTarjeta" style="font-weight: 600; color: var(--azul); margin-right: 10px;">Visualizar Tarjeta:</label>
+                        <select name="idTarjeta" id="idTarjeta" onchange="this.form.submit();" style="padding: 8px 12px; border-radius: 6px; border: 1px solid var(--gris-borde); background: white; font-weight: 500; cursor: pointer;">
+                            <%
+                                Connection cnSelect = null;
+                                PreparedStatement psSelect = null;
+                                ResultSet rsSelect = null;
+                                try {
+                                    cnSelect = DriverManager.getConnection("jdbc:mysql://localhost:3306/metrowebpanama2", "root", "");
+                                    String sqlSelect = "SELECT id_tarjeta, numero_tarjeta, alias_tarjeta FROM tarjeta WHERE id_usuario = ?";
+                                    psSelect = cnSelect.prepareStatement(sqlSelect);
+                                    psSelect.setInt(1, idUsuarioLogueado);
+                                    rsSelect = psSelect.executeQuery();
+                                    
+                                    while(rsSelect.next()) {
+                                        int idT = rsSelect.getInt("id_tarjeta");
+                                        String numT = rsSelect.getString("numero_tarjeta");
+                                        String aliasT = rsSelect.getString("alias_tarjeta");
+                                        String seleccionado = (idT == idTarjetaSeleccionada) ? "selected" : "";
+                            %>
+                                        <option value="<%= idT %>" <%= seleccionado %>><%= aliasT %> - Nº <%= numT %></option>
+                            <%
+                                    }
+                                } catch(Exception ex) {
+                                    System.out.println("❌ Error en el dropdown de tarjetas: " + ex.getMessage());
+                                } finally {
+                                    if (rsSelect != null) try { rsSelect.close(); } catch(Exception e){}
+                                    if (psSelect != null) try { psSelect.close(); } catch(Exception e){}
+                                    if (cnSelect != null) try { cnSelect.close(); } catch(Exception e){}
+                                }
+                            %>
+                        </select>
+                    </form>
+                </div>
+
                 <p style="color: var(--gris-medio); font-size: 14px; margin-bottom: 5px; font-weight: 500;">Usuario</p>
                 <h2 style="color: var(--azul); margin-bottom: 25px;">Estado de tarjeta</h2>
 
@@ -128,25 +202,14 @@
 
                 <div style="display: flex; justify-content: flex-end; margin-top: 5px; margin-bottom: 35px;">
                     <a href="Recarga_tarjetas.jsp" 
-                       style="text-decoration: none; 
-                              background-color: #e8610a; 
-                              color: #ffffff; 
-                              padding: 12px 28px; 
-                              border-radius: 8px; 
-                              font-weight: 600; 
-                              font-size: 15px; 
-                              display: inline-flex; 
-                              align-items: center; 
-                              gap: 8px;
-                              box-shadow: 0 4px 12px rgba(232, 97, 10, 0.2);
-                              transition: background-color 0.2s;">
+                       style="text-decoration: none; background-color: #e8610a; color: #ffffff; padding: 12px 28px; border-radius: 8px; font-weight: 600; font-size: 15px; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 4px 12px rgba(232, 97, 10, 0.2);">
                         Recargar Tarjeta
                     </a>
                 </div>
 
                 <h2 style="color: var(--azul); margin-top: 20px; margin-bottom: 25px;">Resumen del último trimestre</h2>
 
-                <%-- TABLA 1: USO DE BUSES Y METRO (Fija por el momento o vinculable a tu tabla 'viaje'/'historialsaldo') --%>
+                <%-- TABLA 1: USO DE BUSES Y METRO --%>
                 <table class="tabla-resumen">
                     <thead>
                         <tr>
@@ -162,20 +225,20 @@
                     <tbody>
                         <tr>
                             <td class="txt-destaque">Monto utilizado</td>
-                            <td>$9.50</td>
-                            <td>$10.75</td>
-                            <td>$3.50</td> <%-- Sincronizado dinámicamente con tus inserts previos --%>
+                            <td>$<%= String.format("%.2f", usoMayo) %></td>
+                            <td>$<%= String.format("%.2f", usoJunio) %></td>
+                            <td>$<%= String.format("%.2f", usoJulio) %></td>
                         </tr>
                         <tr>
                             <td class="txt-destaque">Num de validaciones</td>
-                            <td>37</td>
-                            <td>42</td>
-                            <td>4</td>
+                            <td><%= valMayo %></td>
+                            <td><%= valJunio %></td>
+                            <td><%= valJulio %></td>
                         </tr>
                     </tbody>
                 </table>
 
-                <%-- TABLA 2: RECARGAS AUTOMATIZADAS DESDE TU BASE DE DATOS --%>
+                <%-- TABLA 2: RECARGAS AUTOMATIZADAS --%>
                 <table class="tabla-resumen">
                     <thead>
                         <tr>
