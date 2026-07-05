@@ -194,7 +194,7 @@
 </div>
 
 <!-- Pie de página común -->
-<jsp:include page="componentes/footer.jsp" />
+<jsp:include page="componentes/footer_admin.jsp" />
 
 <!-- ==========================================================================
      SCRIPTS JAVASCRIPT PARA CONTROLAR EL MODAL

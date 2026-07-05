@@ -195,7 +195,7 @@
     </div>
 </div>
 
-<jsp:include page="componentes/footer.jsp" />
+<jsp:include page="componentes/footer_admin.jsp" />
 
 <script>
     const modal = document.getElementById('modalEliminar');
