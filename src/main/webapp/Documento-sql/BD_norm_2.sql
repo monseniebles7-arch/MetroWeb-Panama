@@ -60,6 +60,9 @@ CREATE TABLE HistorialSaldo (
     id_tarjeta INT NOT NULL, FOREIGN KEY (id_tarjeta) REFERENCES Tarjeta(id_tarjeta) ON DELETE CASCADE
 );
 
+-- agregamos la columna para enlazar los viajes con una tarjeta especifica
+ALTER TABLE Viaje ADD COLUMN id_tarjeta INT NOT NULL;
+
 -- 5. INSERCIONES DE DATOS (Sin 'Efectivo')
 INSERT INTO Rol (nombre_rol) VALUES ('Administrador'), ('Usuario');
 INSERT INTO EstadoTarjeta (descripcion) VALUES ('Activa'), ('Bloqueada'), ('Vencida');

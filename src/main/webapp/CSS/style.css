@@ -1194,6 +1194,34 @@ footer {
   font-weight: bold;
 }
 
+/* ─── CLASES PARA EL SELECTOR DINAMICO EN 	SALDOS Y MOVIMIENTOS ─── */
+.contenedor-selector-historial {
+    margin-bottom: 20px;
+}
+
+.etiqueta-selector {
+    display: block;
+    margin-bottom: 8px;
+}
+
+.select-tarjeta-dinamico {
+    width: 100%;
+    max-width: 300px;
+    padding: 8px;
+    border-radius: 6px;
+}
+
+.tabla-vacia-mensaje {
+    text-align: center;
+    padding: 20px;
+}
+
+.tabla-error-mensaje {
+    color: #CC0000;
+    text-align: center;
+    padding: 20px;
+}
+
 /* ─── SOBRE NOSOTROS ─── */
 .seccion-equipo {
   margin-top: 60px;
