@@ -1,4 +1,58 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page import="java.sql.*" %>
+<%
+    // =========================================================================
+    // CONFIGURACIÓN DE SESIÓN Y CARGA DE DATOS DE TARJETA
+    // =========================================================================
+    Integer idUsuarioLogueado = (Integer) session.getAttribute("id_usuario");
+    if (idUsuarioLogueado == null) {
+        idUsuarioLogueado = 1; // ID de respaldo para pruebas locales
+    }
+
+    // Variables dinámicas para el estado de la tarjeta
+    String nombreCompleto = "Usuario";
+    String numTarjeta = "No registrada";
+    String tipoTarjeta = "Regular";
+    double saldoActual = 0.00;
+
+    Connection cn = null;
+    PreparedStatement ps = null;
+    ResultSet rs = null;
+
+    try {
+        // Conexión a la base de datos de referencia
+        Class.forName("com.mysql.cj.jdbc.Driver");
+        cn = DriverManager.getConnection("jdbc:mysql://localhost:3306/metrowebpanama2", "root", "");
+
+        // Consulta que une la información del usuario con su tarjeta vinculada (asumiendo relación o alias_tarjeta/tipo)
+        // Adaptado a los campos base: nombre, apellido de Usuario y asumiendo una tabla Tarjeta con num_tarjeta, tipo_tarjeta, saldo
+        String sql = "SELECT u.nombre, u.apellido, t.num_tarjeta, t.tipo_tarjeta, t.saldo " +
+                     "FROM Usuario u " +
+                     "LEFT JOIN Tarjeta t ON u.id_usuario = t.id_usuario " +
+                     "WHERE u.id_usuario = ? LIMIT 1";
+        
+        ps = cn.prepareStatement(sql);
+        ps.setInt(1, idUsuarioLogueado);
+        rs = ps.executeQuery();
+
+        if (rs.next()) {
+            nombreCompleto = rs.getString("nombre") + " " + rs.getString("apellido");
+            
+            // Verificamos si el usuario efectivamente tiene una tarjeta vinculada
+            if (rs.getString("num_tarjeta") != null) {
+                numTarjeta = rs.getString("num_tarjeta");
+                tipoTarjeta = rs.getString("tipo_tarjeta") != null ? rs.getString("tipo_tarjeta") : "Regular";
+                saldoActual = rs.getDouble("saldo");
+            }
+        }
+    } catch (Exception e) {
+        System.out.println("⚠️ Error al cargar saldo y movimientos: " + e.getMessage());
+    } finally {
+        if (rs != null) try { rs.close(); } catch(Exception e){}
+        if (ps != null) try { ps.close(); } catch(Exception e){}
+        if (cn != null) try { cn.close(); } catch(Exception e){}
+    }
+%>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -23,15 +77,15 @@
                     <tbody>
                         <tr>
                             <td class="txt-destaque" style="width: 20%;">Nombre:</td>
-                            <td style="width: 30%;">Juan Pérez</td>
+                            <td style="width: 30%;"><%= nombreCompleto %></td>
                             <td class="txt-destaque" style="width: 20%;">Num tarjeta:</td>
-                            <td style="width: 30%;">1234-4321</td>
+                            <td style="width: 30%;"><%= numTarjeta %></td>
                         </tr>
                         <tr>
                             <td class="txt-destaque">Tipo de tarjeta:</td>
-                            <td>Estándar</td>
+                            <td><%= tipoTarjeta %></td>
                             <td class="txt-destaque">Saldo actual:</td>
-                            <td style="color: var(--naranja); font-weight: bold; font-size: 16px;">$5.50</td>
+                            <td style="color: var(--naranja); font-weight: bold; font-size: 16px;">$<%= String.format("%.2f", saldoActual) %></td>
                         </tr>
                     </tbody>
                 </table>

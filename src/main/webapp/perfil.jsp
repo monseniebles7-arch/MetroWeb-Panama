@@ -5,17 +5,14 @@
     // =========================================================================
     // 1. CONFIGURACIÓN DE SESIÓN Y VARIABLES DE CONTROL
     // =========================================================================
-    
-    // Se obtiene el ID del usuario logueado en la sesión activa
     Integer idUsuarioLogueado = (Integer) session.getAttribute("id_usuario");
     if (idUsuarioLogueado == null) {
-        idUsuarioLogueado = 1; // ID de respaldo por si estás probando sin login previo
+        idUsuarioLogueado = 1; 
     }
 
     String mensajeAlerta = null;
     boolean esExito = false;
 
-    // Variables globales para poblar el formulario (se rellenan en el bloque GET)
     String nombre = "", apellido = "", correo = "";
 
     // =========================================================================
@@ -24,13 +21,11 @@
     if ("POST".equalsIgnoreCase(request.getMethod())) {
         request.setCharacterEncoding("UTF-8");
         
-        // Captura de los datos enviados desde los inputs del formulario
         String inputNombre = request.getParameter("nombre");
         String inputApellido = request.getParameter("apellido");
         String inputPassword = request.getParameter("password");
         String inputConfirmar = request.getParameter("confirmar");
 
-        // Validaciones basadas en tu código de registro de referencia
         if (inputPassword != null && !inputPassword.isEmpty() && inputPassword.length() < 8) {
             mensajeAlerta = "❌ La nueva contraseña debe tener al menos 8 caracteres.";
         } else if (inputPassword != null && !inputPassword.isEmpty() && !inputPassword.equals(inputConfirmar)) {
@@ -40,11 +35,9 @@
             PreparedStatement psUpdate = null;
 
             try {
-                // Conexión exacta a tu base de datos de referencia: metrowebpanama2
                 Class.forName("com.mysql.cj.jdbc.Driver");
                 cn = DriverManager.getConnection("jdbc:mysql://localhost:3306/metrowebpanama2", "root", "");
 
-                // Si el usuario escribió una nueva contraseña, se hashea y se actualiza todo
                 if (inputPassword != null && !inputPassword.isEmpty()) {
                     String contrasenaHasheada = BCrypt.hashpw(inputPassword, BCrypt.gensalt(12));
                     String sqlUpdate = "UPDATE Usuario SET nombre=?, apellido=?, hash_contrasena=? WHERE id_usuario=?";
@@ -54,7 +47,6 @@
                     psUpdate.setString(3, contrasenaHasheada);
                     psUpdate.setInt(4, idUsuarioLogueado);
                 } else {
-                    // Si dejó los campos de contraseña vacíos, solo se actualizan Nombre y Apellido
                     String sqlUpdate = "UPDATE Usuario SET nombre=?, apellido=? WHERE id_usuario=?";
                     psUpdate = cn.prepareStatement(sqlUpdate);
                     psUpdate.setString(1, inputNombre.trim());
@@ -68,7 +60,6 @@
             } catch (Exception e) {
                 mensajeAlerta = "⚠️ Error al guardar en el sistema: " + e.getMessage();
             } finally {
-                // Cierre seguro de recursos en el bloque finally
                 if (psUpdate != null) try { psUpdate.close(); } catch(Exception e){}
                 if (cn != null) try { cn.close(); } catch(Exception e){}
             }
@@ -86,7 +77,6 @@
         Class.forName("com.mysql.cj.jdbc.Driver");
         cnGet = DriverManager.getConnection("jdbc:mysql://localhost:3306/metrowebpanama2", "root", "");
 
-        // Consulta para traer la información basándonos únicamente en los campos de tu registro
         String sqlSelect = "SELECT nombre, apellido, correo FROM Usuario WHERE id_usuario = ?";
         psSelect = cnGet.prepareStatement(sqlSelect);
         psSelect.setInt(1, idUsuarioLogueado);
@@ -115,21 +105,31 @@
 </head>
 <body>
 
+    <%-- jsp:include: Carga de forma modular la barra de navegación superior (header.jsp) --%>
     <jsp:include page="componentes/header.jsp" />
 
+    <%-- Etiqueta <main>: Delimita el contenido central de la gestión del perfil para buscadores y accesibilidad --%>
     <main class="contenedor seccion">
         
+        <%-- Div contenedor principal del perfil: Aplica una estructura flexible para acomodar y centrar las tarjetas --%>
         <div class="perfil-container">
+            
+            <%-- Tarjeta blanca contenedora que agrupa la información del usuario y los controles de edición --%>
             <div class="perfil-card">
 
+                <%-- Bloque superior (cabecera interna) de la tarjeta de perfil --%>
                 <div class="perfil-top">
+                    <%-- Contenedor de los textos principales con el nombre dinámico del usuario logueado --%>
                     <div class="perfil-info">
+                        <%-- Expresión JSP que inyecta los valores actuales traídos desde MySQL en el bloque GET --%>
                         <h2><%= nombre %> <%= apellido %></h2>
                         <p>Administrador de la cuenta MetroWeb Panamá</p>
                     </div>
                 </div>
 
+                <%-- Bloque de alertas: Se procesa en el servidor y decide si inyecta o no este DIV en el HTML resultante --%>
                 <% if (mensajeAlerta != null) { %>
+                    <%-- Utiliza un operador ternario para alternar la clase CSS entre éxito o error según el resultado del POST --%>
                     <div class="alerta <%= esExito ? "alerta-exito" : "alerta-error" %>">
                         <%= mensajeAlerta %>
                     </div>
@@ -139,46 +139,63 @@
                     Información Personal
                 </h3>
 
+                <%-- Formulario de actualización: Redirige con método POST a este mismo archivo para ejecutar el bloque superior de Java --%>
                 <form action="perfil.jsp" method="post">
+                    
+                    <%-- Div con distribución de rejilla (Grid) para acomodar los inputs en múltiples columnas --%>
                     <div class="perfil-grid">
 
+                        <%-- Bloque de captura del Nombre --%>
                         <div class="grupo">
                             <label for="nombre" class="fw-600">Nombre</label>
+                            <%-- Inyecta el valor actual 'nombre' recuperado por el SELECT para que el input no aparezca vacío --%>
                             <input type="text" id="nombre" name="nombre" value="<%= nombre %>" required>
                         </div>
 
+                        <%-- Bloque de captura del Apellido --%>
                         <div class="grupo">
                             <label for="apellido" class="fw-600">Apellido</label>
                             <input type="text" id="apellido" name="apellido" value="<%= apellido %>" required>
                         </div>
 
+                        <%-- Bloque del Correo electrónico (Ocupa el ancho completo de la grilla por su clase 'grupo-full') --%>
                         <div class="grupo grupo-full">
                             <label for="correo" class="fw-600">Correo electrónico</label>
+                            <%-- readonly: Atributo HTML que impide que el usuario edite el correo desde la interfaz web
+                                 class="bg-gris-fondo": Aplica un tono gris indicando visualmente que es un campo bloqueado --%>
                             <input type="email" id="correo" name="correo" value="<%= correo %>" readonly class="bg-gris-fondo">
                         </div>
 
+                        <%-- Bloque para ingresar una nueva Contraseña (Opcional) --%>
                         <div class="grupo">
                             <label for="password" class="fw-600">Nueva contraseña</label>
                             <input type="password" id="password" name="password" placeholder="Mínimo 8 caracteres">
                         </div>
 
+                        <%-- Bloque para repetir la Contraseña nueva (Validada luego por Java en el POST) --%>
                         <div class="grupo">
                             <label for="confirmar" class="fw-600">Confirmar contraseña</label>
                             <input type="password" id="confirmar" name="confirmar" placeholder="Repite tu contraseña">
                         </div>
                     </div>
 
+                    <%-- Contenedor alineado para los botones de acción del formulario --%>
                     <div class="perfil-botones">
+                        <%-- Botón Cancelar (type="reset"): Restaura los valores de los inputs a su estado original --%>
                         <button class="btn btn-secundario" type="reset">
                             Cancelar
                         </button>
+                        <%-- Botón Guardar (type="submit"): Dispara la acción POST del formulario hacia el servidor --%>
                         <button class="btn btn-principal" type="submit">
                             Guardar Cambios
                         </button>
                     </div>
                 </form>
 
+                <%-- Contenedor inferior flexbox para los accesos directos y enlaces de navegación secundaria del usuario --%>
                 <div style="display: flex; justify-content: center; gap: 15px; margin-top: 40px;">
+                    
+                    <%-- Enlace redireccionado exactamente hacia la vista de agregar-tarjeta.jsp --%>
                     <a href="agregar-tarjeta.jsp" 
                        style="text-decoration: none; 
                               background-color: var(--azul); 
@@ -195,6 +212,7 @@
                               Agregar Tarjeta
                     </a>
 
+                    <%-- Enlace redireccionado exactamente hacia la vista de recarga de tarjetas --%>
                     <a href="Recarga_tarjetas.jsp" 
                        style="text-decoration: none; 
                               background-color: #e8610a; 
@@ -217,6 +235,7 @@
         
     </main>
 
+    <%-- jsp:include: Carga modular del pie de página (footer.jsp) al cierre de la estructura HTML --%>
     <jsp:include page="componentes/footer.jsp" />
 
 </body>
