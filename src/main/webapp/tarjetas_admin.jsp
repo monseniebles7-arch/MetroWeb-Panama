@@ -21,7 +21,7 @@
             psDelete.setInt(1, Integer.parseInt(idEliminar));
             psDelete.executeUpdate();
             
-            response.sendRedirect("tarjetas_admin.jsp");
+            response.sendRedirect("gestion_tarjetas.jsp");
             return;
         } catch (Exception e) {
             e.printStackTrace();
@@ -46,7 +46,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin - Gestión de Tarjetas | MetroWeb Panamá</title>
-  <link rel="stylesheet" href="CSS/style.css"/>
+    <link rel="stylesheet" href="CSS/style.css"/>
 </head>
 <body>
 
@@ -66,7 +66,7 @@
         <div class="flex-between mb-6" style="display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap;">
             
             <!-- Buscador Nativo -->
-            <form action="tarjetas_admin.jsp" method="GET" style="display: flex; gap: 8px; flex-grow: 1; max-width: 400px;">
+            <form action="gestion_tarjetas.jsp" method="GET" style="display: flex; gap: 8px; flex-grow: 1; max-width: 400px;">
                 <input type="text" name="txtBuscar" value="<%= (txtBuscar != null) ? txtBuscar : "" %>" placeholder="🔍 Buscar por número o usuario..." 
                        style="width: 100%; padding: 10px 14px; border: 1px solid #ccc; border-radius: var(--radio); font-family: var(--font-body);">
                 <button type="submit" class="btn btn-primario" style="padding: 0 16px;">Buscar</button>
@@ -175,7 +175,7 @@
     </section>
 </main>
 
-<!-- MODAL EMERGENTE REUTILIZANDO CSS -->
+<!-- MODAL EMERGENTE REUTILIZANDO TUS ESTILOS DE CSS -->
 <div id="modalEliminar" class="modal-overlay">
     <div class="modal-box">
         <h3>¿Confirmar desvinculación?</h3>
@@ -185,7 +185,7 @@
             <button type="button" onclick="cerrarModalEliminar()" class="btn btn-ghost" style="width: 110px;">
                 Cancelar
             </button>
-            <form action="tarjetas_admin.jsp" method="POST" id="formConfirmarEliminar">
+            <form action="gestion_tarjetas.jsp" method="POST" id="formConfirmarEliminar">
                 <input type="hidden" name="idEliminar" id="idEliminarInput">
                 <button type="submit" class="btn btn-naranja" style="width: 110px; background-color: var(--naranja);">
                     Confirmar
