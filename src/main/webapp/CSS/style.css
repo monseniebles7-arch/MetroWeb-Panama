@@ -1664,3 +1664,61 @@ main.seccion-gestion-azul {
         print-color-adjust: exact; 
     }
 }
+
+/* ==========================================================================
+   VENTANA EMERGENTE (MODAL DE CONFIRMACIÓN DE ELIMINACIÓN)
+   ========================================================================== */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+.modal-overlay.activo {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.modal-box {
+    background: #ffffff;
+    padding: 28px;
+    border-radius: var(--radio-xl, 12px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    max-width: 400px;
+    width: 90%;
+    text-align: center;
+    transform: scale(0.8);
+    transition: transform 0.3s ease;
+}
+
+.modal-overlay.activo .modal-box {
+    transform: scale(1);
+}
+
+.modal-box h3 {
+    color: #1a202c;
+    margin-bottom: 12px;
+    font-size: 1.3rem;
+}
+
+.modal-box p {
+    color: #718096;
+    font-size: var(--text-sm, 14px);
+    margin-bottom: 24px;
+}
+
+.modal-botones {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+}
