@@ -1530,3 +1530,137 @@ main.seccion-gestion-azul {
     margin-top: calc(var(--sp-6) * -1); /* Sube el contenido usando un margen negativo controlado (-24px) */
     margin-bottom: var(--sp-4);        /* Mantiene una separación limpia con las tarjetas inferiores */
 }
+
+/* ==========================================================================
+   PANEL DE ADMINISTRACIÓN - MÉTRICAS Y REPORTES
+   ========================================================================== */
+
+.contenedor-graficas {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+    gap: 24px;
+    margin-top: 24px;
+    margin-bottom: 24px;
+}
+
+.grafica-card {
+    background: var(--blanco, #ffffff);
+    padding: 24px;
+    border-radius: var(--radio-xl, 12px);
+    box-shadow: var(--sombra-sm, 0 2px 4px rgba(0,0,0,0.05));
+}
+
+/* Contenedor gris que simula la cuadrícula del reporte con líneas blancas de fondo */
+.grafica-columnas {
+    display: flex;
+    justify-content: space-around;
+    align-items: flex-end;
+    height: 200px;
+    background-color: #f7f7f7 !important;
+    border-bottom: 2px solid #e0e0e0;
+    padding: 20px 10px 0 10px;
+    border-radius: var(--radio, 8px);
+    background-image: linear-gradient(#ffffff 2px, transparent 2px);
+    background-size: 100% 40px;
+}
+
+.columna-wrapper { 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    width: 65px; 
+}
+
+.columna-barra { 
+    width: 100%; 
+    border-radius: 4px 4px 0 0; 
+    transition: height 0.5s; 
+}
+
+.columna-valor { 
+    font-size: var(--text-sm, 14px); 
+    font-weight: 700; 
+    margin-bottom: 4px; 
+}
+
+.columna-etiqueta { 
+    font-size: 12px; 
+    font-weight: 700; 
+    color: #4a5568; 
+    margin-top: 8px; 
+}
+
+/* Colores asignados a las barras (Paleta Turquesa / Cyan / Azul) */
+.barra-activa { background-color: #12d3cf !important; }
+.barra-bloqueada { background-color: #0bc5ea !important; }
+.barra-vencida { background-color: #00b0ff !important; }
+.barra-general { background-color: #00bcd4 !important; }
+.barra-estudiante { background-color: #00acc1; }
+.barra-jubilado { background-color: #0097a7 !important; }
+
+/* ==========================================================================
+   MONITOR DE TRÁNSITO EN ESTACIONES (SIMULACIÓN)
+   ========================================================================== */
+
+.estacion-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    border-bottom: 1px solid #edf2f7;
+}
+
+.estacion-info { 
+    display: flex; 
+    align-items: center; 
+    gap: 12px; 
+}
+
+.linea-indicador { 
+    width: 12px; 
+    height: 12px; 
+    border-radius: 50%; 
+}
+
+.l1 { background-color: #cc0000 !important; } /* Línea 1: Rojo */
+.l2 { background-color: #0066cc !important; } /* Línea 2: Azul */
+
+/* Etiquetas de volumen de pasajeros */
+.badge-trafico { 
+    padding: 4px 10px; 
+    border-radius: 20px; 
+    font-weight: 700; 
+    font-size: var(--text-xs, 12px); 
+}
+
+.trafico-alto { background-color: #fed7d7 !important; color: #c53030 !important; }
+.trafico-medio { background-color: #feebc8 !important; color: #c05621 !important; }
+.trafico-bajo { background-color: #c6f6d5 !important; color: #22543d !important; }
+
+/* ==========================================================================
+   REGLAS DE IMPRESIÓN (PDF)
+   ========================================================================== */
+@media print {
+    body { 
+        background: white; 
+        color: black; 
+    }
+    /* Oculta los componentes de navegación web y el botón de generar */
+    header, nav, footer, .btn-no-print { 
+        display: none !important; 
+    } 
+    .admin-layout-horizontal .admin-body { 
+        max-width: 100%; 
+        padding: 0; 
+        margin: 0; 
+    }
+    .grafica-card { 
+        box-shadow: none; 
+        border: 1px solid #ccc; 
+        page-break-inside: avoid; 
+    }
+    .grafica-columnas, .columna-barra, .badge-trafico, .linea-indicador { 
+        -webkit-print-color-adjust: exact; 
+        print-color-adjust: exact; 
+    }
+}
