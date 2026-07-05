@@ -4,7 +4,7 @@
 
 <%
     // ==========================================================================
-    // PARTE 0: LÓGICA DE ELIMINACIÓN DE TARJETA
+    // LÓGICA DE ELIMINACIÓN DE TARJETA
     // ==========================================================================
     request.setCharacterEncoding("UTF-8");
     String idEliminar = request.getParameter("idEliminar");
@@ -16,7 +16,7 @@
             Class.forName("com.mysql.cj.jdbc.Driver");
             cnDelete = DriverManager.getConnection("jdbc:mysql://localhost:3306/metrowebpanama2", "root", "");
             
-            String sqlDelete = "DELETE FROM tarjeta WHERE id_tarjeta = ?";
+            String sqlDelete = "DELETE FROM tarjetas WHERE id_tarjeta = ?";
             psDelete = cnDelete.prepareStatement(sqlDelete);
             psDelete.setInt(1, Integer.parseInt(idEliminar));
             psDelete.executeUpdate();
@@ -31,10 +31,7 @@
         }
     }
 
-    // 1. LEER EL FILTRO DE BÚSQUEDA (Por número de tarjeta o nombre de usuario)
     String txtBuscar = request.getParameter("txtBuscar");
-
-    // 2. VARIABLES DE CONEXIÓN
     Connection cn = null;
     PreparedStatement ps = null;
     ResultSet rs = null;
@@ -50,42 +47,38 @@
 </head>
 <body>
 
-<!-- Encabezado de administración unificado -->
 <jsp:include page="componentes/header_admin.jsp" />
 
 <main class="admin-layout-horizontal">
     <section class="admin-body">
         
-        <!-- ENCABEZADO DEL PANEL -->
         <div class="panel-header">
             <h2>Control de Tarjetas</h2>
             <p class="subtitulo">Visualiza, busca y administra las tarjetas de transporte digital vinculadas en el sistema</p>
         </div>
 
-        <!-- BARRA DE HERRAMIENTAS -->
         <div class="flex-between mb-6" style="display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap;">
-            
-            <!-- Buscador Nativo -->
             <form action="gestion_tarjetas.jsp" method="GET" style="display: flex; gap: 8px; flex-grow: 1; max-width: 400px;">
-                <input type="text" name="txtBuscar" value="<%= (txtBuscar != null) ? txtBuscar : "" %>" placeholder="🔍 Buscar por número o usuario..." 
+                <input type="text" name="txtBuscar" value="<%= (txtBuscar != null) ? txtBuscar : "" %>" placeholder="🔍 Buscar por número, alias o usuario..." 
                        style="width: 100%; padding: 10px 14px; border: 1px solid #ccc; border-radius: var(--radio); font-family: var(--font-body);">
                 <button type="submit" class="btn btn-primario" style="padding: 0 16px;">Buscar</button>
             </form>
 
-            <!-- Botón Agregar Tarjeta -->
-            <a href="agregar-tarjeta.jsp" class="btn btn-naranja" style="text-decoration: none; display: inline-block; line-height: 40px; height: 40px; padding: 0 20px;">
+            <a href="agregar_tarjeta_admin.jsp" class="btn btn-naranja" style="text-decoration: none; display: inline-block; line-height: 40px; height: 40px; padding: 0 20px;">
                 + Agregar Tarjeta
             </a>
         </div>
 
-        <!-- TABLA DE TARJETA -->
         <div class="tabla-wrapper">
             <table>
                 <thead>
                     <tr>
                         <th>Número de Tarjeta</th>
+                        <th>Alias</th>
                         <th>Propietario</th>
-                        <th>Saldo B/.</th>
+                        <th>Tipo</th>
+                        <th>Estado</th>
+                        <th>Saldo</th>
                         <th class="text-center" style="width: 200px;">Acciones</th>
                     </tr>
                 </thead>
@@ -96,22 +89,23 @@
                             Class.forName("com.mysql.cj.jdbc.Driver");
                             cn = DriverManager.getConnection("jdbc:mysql://localhost:3306/metrowebpanama2", "root", "");
 
-                            String sql;
-                            // Hacemos un INNER JOIN con Usuario para mostrar quién es el dueño de la tarjeta
+                            // Unimos la tabla tarjetas con Usuario, estadotarjeta y tipotarjeta usando alias para desempatar las columnas 'descripcion'
+                            String sql = "SELECT t.id_tarjeta, t.numero_tarjeta, t.alias_tarjeta, t.saldo, " +
+                                         "u.nombre, u.apellido, e.descripcion AS estado_desc, tp.descripcion AS tipo_desc " +
+                                         "FROM tarjetas t " +
+                                         "INNER JOIN Usuario u ON t.id_usuario = u.id_usuario " +
+                                         "INNER JOIN estadotarjeta e ON t.id_estado = e.id_estado " +
+                                         "INNER JOIN tipotarjeta tp ON t.id_tipo_tarjeta = tp.id_tipo_tarjeta";
+
                             if (txtBuscar != null && !txtBuscar.trim().isEmpty()) {
-                                sql = "SELECT t.id_tarjeta, t.num_tarjeta, t.saldo, u.nombre, u.apellido " +
-                                      "FROM tarjeta t " +
-                                      "INNER JOIN Usuario u ON t.id_usuario = u.id_usuario " +
-                                      "WHERE t.num_tarjeta LIKE ? OR u.nombre LIKE ? OR u.apellido LIKE ?";
+                                sql += " WHERE t.numero_tarjeta LIKE ? OR t.alias_tarjeta LIKE ? OR u.nombre LIKE ? OR u.apellido LIKE ?";
                                 ps = cn.prepareStatement(sql);
                                 String queryParam = "%" + txtBuscar.trim() + "%";
                                 ps.setString(1, queryParam);
                                 ps.setString(2, queryParam);
                                 ps.setString(3, queryParam);
+                                ps.setString(4, queryParam);
                             } else {
-                                sql = "SELECT t.id_tarjeta, t.num_tarjeta, t.saldo, u.nombre, u.apellido " +
-                                      "FROM tarjeta t " +
-                                      "INNER JOIN Usuario u ON t.id_usuario = u.id_usuario";
                                 ps = cn.prepareStatement(sql);
                             }
 
@@ -120,28 +114,26 @@
                             while (rs.next()) {
                                 tieneRegistros = true;
                                 int idTarjeta = rs.getInt("id_tarjeta");
-                                String numTarjeta = rs.getString("num_tarjeta");
+                                String numeroTarjeta = rs.getString("numero_tarjeta");
+                                String aliasTarjeta = rs.getString("alias_tarjeta");
                                 double saldo = rs.getDouble("saldo");
                                 String propietario = rs.getString("nombre") + " " + rs.getString("apellido");
+                                String estadoDesc = rs.getString("estado_desc");
+                                String tipoDesc = rs.getString("tipo_desc");
                     %>
                                 <tr>
-                                    <td class="fw-600"><%= numTarjeta %></td>
+                                    <td class="fw-600"><%= numeroTarjeta %></td>
+                                    <td class="text-mutado"><%= (aliasTarjeta != null) ? aliasTarjeta : "-" %></td>
                                     <td><%= propietario %></td>
+                                    <td><span class="badge-tipo"><%= tipoDesc %></span></td>
+                                    <td><strong><%= estadoDesc %></strong></td>
                                     <td><strong>B/. <%= String.format("%.2f", saldo) %></strong></td>
                                     <td class="text-center">
                                         <div style="display: flex; gap: 12px; justify-content: center; align-items: center;">
-                                            <!-- Botón Editar redirige a agregar-tarjeta.jsp pasando el ID -->
-                                            <a href="agregar-tarjeta.jsp?id=<%= idTarjeta %>" 
-                                               class="btn btn-ghost btn-sm" 
-                                               style="text-decoration: none; width: 90px; text-align: center; box-sizing: border-box; display: inline-block;">
+                                            <a href="agregar_tarjeta_admin.jsp?id=<%= idTarjeta %>" class="btn btn-ghost btn-sm" style="text-decoration: none; width: 90px; text-align: center; box-sizing: border-box; display: inline-block;">
                                                Editar
                                             </a>
-                                            
-                                            <!-- Botón Eliminar ejecuta el Modal -->
-                                            <button type="button" 
-                                                    onclick="abrirModalEliminar(<%= idTarjeta %>, '<%= numTarjeta %>')"
-                                                    class="btn btn-outline btn-sm" 
-                                                    style="color: var(--naranja); border-color: var(--naranja); cursor: pointer; width: 90px; text-align: center; box-sizing: border-box; display: inline-block; background: transparent;">
+                                            <button type="button" onclick="abrirModalEliminar(<%= idTarjeta %>, '<%= numeroTarjeta %>')" class="btn btn-outline btn-sm" style="color: var(--naranja); border-color: var(--naranja); cursor: pointer; width: 90px; text-align: center; box-sizing: border-box; display: inline-block; background: transparent;">
                                                Eliminar
                                             </button>
                                         </div>
@@ -152,7 +144,7 @@
                         } catch (Exception e) {
                     %>
                             <tr>
-                                <td colspan="4" style="color: red; padding: 15px;">⚠️ Error de conexión: <%= e.getMessage() %></td>
+                                <td colspan="7" style="color: red; padding: 15px;">⚠️ Error al procesar tablas: <%= e.getMessage() %></td>
                             </tr>
                     <%
                         } finally {
@@ -164,7 +156,7 @@
                         if (!tieneRegistros) {
                     %>
                             <tr>
-                                <td colspan="4" class="text-center text-mutado" style="padding: var(--sp-6);">No se encontraron tarjetas registradas en el sistema.</td>
+                                <td colspan="7" class="text-center text-mutado" style="padding: var(--sp-6);">No se encontraron tarjetas registradas.</td>
                             </tr>
                     <%
                         }
@@ -175,21 +167,15 @@
     </section>
 </main>
 
-<!-- MODAL EMERGENTE REUTILIZANDO TUS ESTILOS DE CSS -->
 <div id="modalEliminar" class="modal-overlay">
     <div class="modal-box">
         <h3>¿Confirmar desvinculación?</h3>
-        <p>¿Seguro que deseas eliminar la tarjeta N° <strong id="numeroTarjetaModal" style="color: #1a202c;"></strong>? Esta acción borrará de inmediato sus datos del sistema.</p>
-        
+        <p>¿Seguro que deseas eliminar la tarjeta N° <strong id="numeroTarjetaModal" style="color: #1a202c;"></strong>?</p>
         <div class="modal-botones">
-            <button type="button" onclick="cerrarModalEliminar()" class="btn btn-ghost" style="width: 110px;">
-                Cancelar
-            </button>
-            <form action="gestion_tarjetas.jsp" method="POST" id="formConfirmarEliminar">
+            <button type="button" onclick="cerrarModalEliminar()" class="btn btn-ghost" style="width: 110px;">Cancelar</button>
+            <form action="gestion_tarjetas.jsp" method="POST">
                 <input type="hidden" name="idEliminar" id="idEliminarInput">
-                <button type="submit" class="btn btn-naranja" style="width: 110px; background-color: var(--naranja);">
-                    Confirmar
-                </button>
+                <button type="submit" class="btn btn-naranja" style="width: 110px; background-color: var(--naranja);">Confirmar</button>
             </form>
         </div>
     </div>
@@ -207,17 +193,12 @@
         idInput.value = id;
         modal.classList.add('activo');
     }
-
     function cerrarModalEliminar() {
         modal.classList.remove('activo');
     }
-
     window.onclick = function(event) {
-        if (event.target === modal) {
-            cerrarModalEliminar();
-        }
+        if (event.target === modal) cerrarModalEliminar();
     }
 </script>
-
 </body>
 </html>
