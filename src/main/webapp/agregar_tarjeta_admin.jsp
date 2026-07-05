@@ -17,7 +17,7 @@
     double saldo = 0.0;
     int idEstado = 1;
     int idTipoTarjeta = 1;
-    int idUsuario = 0;
+    String correoUsuario = ""; // Guardaremos el correo en lugar del ID bruto en la vista
 
     Connection cn = null;
 
@@ -32,50 +32,75 @@
         String txtSaldo = request.getParameter("saldo");
         String txtEstado = request.getParameter("id_estado");
         String txtTipo = request.getParameter("tipoTarjeta");
-        String txtUsuario = request.getParameter("id_usuario");
+        String txtCorreo = request.getParameter("correo_usuario"); // Capturamos el correo introducido
 
+        PreparedStatement psUsuario = null;
         PreparedStatement psAccion = null;
+        ResultSet rsUsuario = null;
 
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             cn = DriverManager.getConnection("jdbc:mysql://localhost:3306/metrowebpanama2", "root", "");
 
-            if (modoEdicion) {
-                // Modo Administración: Modificar registro existente
-                String sqlUpdate = "UPDATE tarjetas SET numero_tarjeta = ?, alias_tarjeta = ?, saldo = ?, id_estado = ?, id_tipo_tarjeta = ?, id_usuario = ? WHERE id_tarjeta = ?";
-                psAccion = cn.prepareStatement(sqlUpdate);
-                psAccion.setString(1, txtNumero.trim());
-                psAccion.setString(2, txtAlias.trim());
-                psAccion.setDouble(3, Double.parseDouble(txtSaldo));
-                psAccion.setInt(4, Integer.parseInt(txtEstado));
-                psAccion.setInt(5, Integer.parseInt(txtTipo));
-                psAccion.setInt(6, Integer.parseInt(txtUsuario));
-                psAccion.setInt(7, Integer.parseInt(idParam));
-                psAccion.executeUpdate();
-                esExito = true;
+            // PASO A: Buscar el id_usuario correspondiente al correo ingresado
+            String sqlBuscarUsuario = "SELECT id_usuario FROM Usuario WHERE correo = ?";
+            psUsuario = cn.prepareStatement(sqlBuscarUsuario);
+            psUsuario.setString(1, txtCorreo.trim());
+            rsUsuario = psUsuario.executeQuery();
+
+            if (rsUsuario.next()) {
+                int idUsuarioEncontrado = rsUsuario.getInt("id_usuario");
+
+                if (modoEdicion) {
+                    // Modo Administración: Modificar registro existente
+                    String sqlUpdate = "UPDATE tarjeta SET numero_tarjeta = ?, alias_tarjeta = ?, saldo = ?, id_estado = ?, id_tipo_tarjeta = ?, id_usuario = ? WHERE id_tarjeta = ?";
+                    psAccion = cn.prepareStatement(sqlUpdate);
+                    psAccion.setString(1, txtNumero.trim());
+                    psAccion.setString(2, txtAlias.trim());
+                    psAccion.setDouble(3, Double.parseDouble(txtSaldo));
+                    psAccion.setInt(4, Integer.parseInt(txtEstado));
+                    psAccion.setInt(5, Integer.parseInt(txtTipo));
+                    psAccion.setInt(6, idUsuarioEncontrado);
+                    psAccion.setInt(7, Integer.parseInt(idParam));
+                    psAccion.executeUpdate();
+                    esExito = true;
+                } else {
+                    // Modo Administración: Registrar nueva tarjeta en la BD
+                    String sqlInsert = "INSERT INTO tarjeta (numero_tarjeta, alias_tarjeta, saldo, id_estado, id_tipo_tarjeta, id_usuario) VALUES (?, ?, ?, ?, ?, ?)";
+                    psAccion = cn.prepareStatement(sqlInsert);
+                    psAccion.setString(1, txtNumero.trim());
+                    psAccion.setString(2, txtAlias.trim());
+                    psAccion.setDouble(3, Double.parseDouble(txtSaldo));
+                    psAccion.setInt(4, Integer.parseInt(txtEstado));
+                    psAccion.setInt(5, Integer.parseInt(txtTipo));
+                    psAccion.setInt(6, idUsuarioEncontrado);
+                    psAccion.executeUpdate();
+                    esExito = true;
+                }
             } else {
-                // Modo Administración: Registrar nueva tarjeta en la BD
-                String sqlInsert = "INSERT INTO tarjetas (numero_tarjeta, alias_tarjeta, saldo, id_estado, id_tipo_tarjeta, id_usuario) VALUES (?, ?, ?, ?, ?, ?)";
-                psAccion = cn.prepareStatement(sqlInsert);
-                psAccion.setString(1, txtNumero.trim());
-                psAccion.setString(2, txtAlias.trim());
-                psAccion.setDouble(3, Double.parseDouble(txtSaldo));
-                psAccion.setInt(4, Integer.parseInt(txtEstado));
-                psAccion.setInt(5, Integer.parseInt(txtTipo));
-                psAccion.setInt(6, Integer.parseInt(txtUsuario));
-                psAccion.executeUpdate();
-                esExito = true;
+                // El correo no pertenece a ningún usuario en la base de datos
+                mensajeAlerta = "❌ El correo electrónico ingresado no se encuentra registrado en el sistema.";
+                // Conservamos los datos ingresados para que el admin no los pierda al recargarse la pantalla
+                numeroTarjeta = txtNumero;
+                aliasTarjeta = txtAlias;
+                saldo = Double.parseDouble(txtSaldo);
+                idEstado = Integer.parseInt(txtEstado);
+                idTipoTarjeta = Integer.parseInt(txtTipo);
+                correoUsuario = txtCorreo;
             }
             
         } catch (Exception e) {
             e.printStackTrace(); 
             mensajeAlerta = "⚠️ Error en la Base de Datos: " + e.getMessage();
         } finally {
+            if (rsUsuario != null) try { rsUsuario.close(); } catch(Exception e){}
+            if (psUsuario != null) try { psUsuario.close(); } catch(Exception e){}
             if (psAccion != null) try { psAccion.close(); } catch(Exception e){}
+            if (cn != null) try { cn.close(); } catch(Exception e){}
         }
 
         if (esExito) {
-            response.sendRedirect("gestion_tarjetas.jsp");
+            response.sendRedirect("tarjetas_admin.jsp");
             return;
         }
     }
@@ -90,7 +115,11 @@
             Class.forName("com.mysql.cj.jdbc.Driver");
             cn = DriverManager.getConnection("jdbc:mysql://localhost:3306/metrowebpanama2", "root", "");
 
-            String sqlSelect = "SELECT numero_tarjeta, alias_tarjeta, saldo, id_estado, id_tipo_tarjeta, id_usuario FROM tarjetas WHERE id_tarjeta = ?";
+            // Hacemos un INNER JOIN para recuperar directamente el correo del propietario actual
+            String sqlSelect = "SELECT t.numero_tarjeta, t.alias_tarjeta, t.saldo, t.id_estado, t.id_tipo_tarjeta, u.correo " +
+                               "FROM tarjeta t " +
+                               "INNER JOIN Usuario u ON t.id_usuario = u.id_usuario " +
+                               "WHERE t.id_tarjeta = ?";
             psSelect = cn.prepareStatement(sqlSelect);
             psSelect.setInt(1, Integer.parseInt(idParam));
             rsSelect = psSelect.executeQuery();
@@ -101,9 +130,9 @@
                 saldo = rsSelect.getDouble("saldo");
                 idEstado = rsSelect.getInt("id_estado");
                 idTipoTarjeta = rsSelect.getInt("id_tipo_tarjeta");
-                idUsuario = rsSelect.getInt("id_usuario");
+                correoUsuario = rsSelect.getString("correo"); // Cargamos el correo en el input
             } else {
-                response.sendRedirect("gestion_tarjetas.jsp");
+                response.sendRedirect("tarjetas_admin.jsp");
                 return;
             }
         } catch (Exception e) {
@@ -111,6 +140,7 @@
         } finally {
             if (rsSelect != null) try { rsSelect.close(); } catch(Exception e){}
             if (psSelect != null) try { psSelect.close(); } catch(Exception e){}
+            if (cn != null) try { cn.close(); } catch(Exception e){}
         }
     }
 %>
@@ -140,7 +170,6 @@
                     </div>
                 <% } %>
 
-                <!-- El formulario se envía a sí mismo preservando el parámetro ID si está en modo edición -->
                 <form action="agregar-tarjeta.jsp<%= modoEdicion ? "?id=" + idParam : "" %>" method="POST">
                     
                     <!-- Campo 1: Número de tarjeta -->
@@ -172,7 +201,7 @@
                         />
                     </div>
 
-                    <!-- Campo 3: Ajuste de saldo (Exclusivo de gestión administrativa) -->
+                    <!-- Campo 3: Ajuste de saldo -->
                     <div class="campo" style="margin-top: 20px;">
                         <label for="saldo">Saldo Disponible (B/.)</label>
                         <input 
@@ -186,7 +215,7 @@
                         />
                     </div>
 
-                    <!-- Campo 4: Estado de Tarjeta (Tabla estadotarjeta) -->
+                    <!-- Campo 4: Estado de Tarjeta -->
                     <div class="campo" style="margin-top: 20px;">
                         <label for="id_estado">Estado Operativo</label>
                         <select id="id_estado" name="id_estado" style="width: 100%; padding: 10px; border: 1px solid var(--gris-borde); border-radius: 4px; background: white; font-family: inherit;">
@@ -196,7 +225,7 @@
                         </select>
                     </div>
 
-                    <!-- Campo 5: Tipo de Tarjeta (Tabla tipotarjeta) -->
+                    <!-- Campo 5: Tipo de Tarjeta -->
                     <div class="campo" style="margin-top: 20px;">
                         <label for="tipoTarjeta">Tipo de Tarjeta</label>
                         <select id="tipoTarjeta" name="tipoTarjeta" style="width: 100%; padding: 10px; border: 1px solid var(--gris-borde); border-radius: 4px; background: white; font-family: inherit;">
@@ -206,45 +235,27 @@
                         </select>
                     </div>
 
-                    <!-- Campo 6: Propietario de la tarjeta (Dropdown dinámico de la BD) -->
+                    <!-- NUEVO CAMPO OPTIMIZADO: Correo del usuario dueño de la tarjeta -->
                     <div class="campo" style="margin-top: 20px;">
-                        <label for="id_usuario">Asignar Propietario</label>
-                        <select id="id_usuario" name="id_usuario" required style="width: 100%; padding: 10px; border: 1px solid var(--gris-borde); border-radius: 4px; background: white; font-family: inherit;">
-                            <option value="">-- Seleccione un usuario --</option>
-                            <%
-                                Statement stUsers = null;
-                                ResultSet rsUsers = null;
-                                try {
-                                    if (cn == null || cn.isClosed()) {
-                                        Class.forName("com.mysql.cj.jdbc.Driver");
-                                        cn = DriverManager.getConnection("jdbc:mysql://localhost:3306/metrowebpanama2", "root", "");
-                                    }
-                                    stUsers = cn.createStatement();
-                                    rsUsers = stUsers.executeQuery("SELECT id_usuario, nombre, apellido FROM Usuario ORDER BY nombre ASC");
-                                    while (rsUsers.next()) {
-                                        int uId = rsUsers.getInt("id_usuario");
-                                        String uNombre = rsUsers.getString("nombre") + " " + rsUsers.getString("apellido");
-                                        String uSelected = (uId == idUsuario) ? "selected" : "";
-                            %>
-                                        <option value="<%= uId %>" <%= uSelected %>><%= uNombre %></option>
-                            <%
-                                    }
-                                } catch(Exception e) {
-                                    e.printStackTrace();
-                                } finally {
-                                    if (rsUsers != null) try { rsUsers.close(); } catch(Exception e){}
-                                    if (stUsers != null) try { stUsers.close(); } catch(Exception e){}
-                                    if (cn != null) try { cn.close(); } catch(Exception e){}
-                                }
-                            %>
-                        </select>
+                        <label for="correo_usuario">Correo Electrónico del Propietario</label>
+                        <input 
+                            type="email" 
+                            id="correo_usuario" 
+                            name="correo_usuario" 
+                            value="<%= correoUsuario %>"
+                            placeholder="Ej. usuario@correo.com" 
+                            required
+                        />
+                        <small style="color: var(--gris-texto); font-size: 0.8rem; display: block; margin-top: 5px;">
+                            La tarjeta quedará enlazada automáticamente a la cuenta que posea este correo.
+                        </small>
                     </div>
 
                     <button type="submit" class="btn btn-primario btn-full" style="margin-top: 30px;">
                          <%= modoEdicion ? "Confirmar Cambios" : "Guardar Tarjeta" %>
                     </button>
                     
-                    <a href="gestion_tarjetas.jsp" style="display: block; text-align: center; margin-top: 15px; color: var(--azul-primario); text-decoration: none; font-size: 0.9rem;">
+                    <a href="tarjetas_admin.jsp" style="display: block; text-align: center; margin-top: 15px; color: var(--azul-primario); text-decoration: none; font-size: 0.9rem;">
                         Cancelar y regresar
                     </a>
                 </form>

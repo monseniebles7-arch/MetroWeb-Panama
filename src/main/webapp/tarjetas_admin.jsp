@@ -16,12 +16,12 @@
             Class.forName("com.mysql.cj.jdbc.Driver");
             cnDelete = DriverManager.getConnection("jdbc:mysql://localhost:3306/metrowebpanama2", "root", "");
             
-            String sqlDelete = "DELETE FROM tarjetas WHERE id_tarjeta = ?";
+            String sqlDelete = "DELETE FROM tarjeta WHERE id_tarjeta = ?";
             psDelete = cnDelete.prepareStatement(sqlDelete);
             psDelete.setInt(1, Integer.parseInt(idEliminar));
             psDelete.executeUpdate();
             
-            response.sendRedirect("gestion_tarjetas.jsp");
+            response.sendRedirect("tarjetas_admin.jsp");
             return;
         } catch (Exception e) {
             e.printStackTrace();
@@ -58,7 +58,7 @@
         </div>
 
         <div class="flex-between mb-6" style="display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap;">
-            <form action="gestion_tarjetas.jsp" method="GET" style="display: flex; gap: 8px; flex-grow: 1; max-width: 400px;">
+            <form action="tarjetas_admin.jsp" method="GET" style="display: flex; gap: 8px; flex-grow: 1; max-width: 400px;">
                 <input type="text" name="txtBuscar" value="<%= (txtBuscar != null) ? txtBuscar : "" %>" placeholder="🔍 Buscar por número, alias o usuario..." 
                        style="width: 100%; padding: 10px 14px; border: 1px solid #ccc; border-radius: var(--radio); font-family: var(--font-body);">
                 <button type="submit" class="btn btn-primario" style="padding: 0 16px;">Buscar</button>
@@ -89,10 +89,10 @@
                             Class.forName("com.mysql.cj.jdbc.Driver");
                             cn = DriverManager.getConnection("jdbc:mysql://localhost:3306/metrowebpanama2", "root", "");
 
-                            // Unimos la tabla tarjetas con Usuario, estadotarjeta y tipotarjeta usando alias para desempatar las columnas 'descripcion'
+                            // Unimos la tabla tarjeta con Usuario, estadotarjeta y tipotarjeta usando alias para desempatar las columnas 'descripcion'
                             String sql = "SELECT t.id_tarjeta, t.numero_tarjeta, t.alias_tarjeta, t.saldo, " +
                                          "u.nombre, u.apellido, e.descripcion AS estado_desc, tp.descripcion AS tipo_desc " +
-                                         "FROM tarjetas t " +
+                                         "FROM tarjeta t " +
                                          "INNER JOIN Usuario u ON t.id_usuario = u.id_usuario " +
                                          "INNER JOIN estadotarjeta e ON t.id_estado = e.id_estado " +
                                          "INNER JOIN tipotarjeta tp ON t.id_tipo_tarjeta = tp.id_tipo_tarjeta";
@@ -173,7 +173,7 @@
         <p>¿Seguro que deseas eliminar la tarjeta N° <strong id="numeroTarjetaModal" style="color: #1a202c;"></strong>?</p>
         <div class="modal-botones">
             <button type="button" onclick="cerrarModalEliminar()" class="btn btn-ghost" style="width: 110px;">Cancelar</button>
-            <form action="gestion_tarjetas.jsp" method="POST">
+            <form action="tarjetas_admin.jsp" method="POST">
                 <input type="hidden" name="idEliminar" id="idEliminarInput">
                 <button type="submit" class="btn btn-naranja" style="width: 110px; background-color: var(--naranja);">Confirmar</button>
             </form>
