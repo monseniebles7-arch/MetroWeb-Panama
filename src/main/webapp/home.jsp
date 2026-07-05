@@ -237,7 +237,7 @@
   
 </main>
 
-<jsp:include page="componentes/footer.jsp" />
+<jsp:include page="componentes/footer_home.jsp" />
 
 </body>
 </html>
