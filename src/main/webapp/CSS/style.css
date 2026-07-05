@@ -1265,3 +1265,268 @@ footer {
 .nav-links a:hover {
   color: var(--naranja) !important;
 }
+
+
+/* ─── GRID DE MÚLTIPLES TARJETAS ─── */
+.tarjetas-contenedor-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 24px;
+  margin-top: 16px;
+}
+
+/* Tarjeta de transporte individual */
+.tarjeta-transporte {
+  background: linear-gradient(135deg, var(--azul) 0%, #254b8c 100%);
+  color: var(--blanco);
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 10px 20px rgba(26, 58, 107, 0.15);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 200px;
+}
+
+.tarjeta-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.tarjeta-marca {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 16px;
+  letter-spacing: 1px;
+}
+
+.tarjeta-numero {
+  font-family: var(--font-mono, monospace);
+  font-size: 14px;
+  color: var(--gris-borde);
+  margin-top: 4px;
+}
+
+.tarjeta-body-saldo {
+  margin-top: 16px;
+  margin-bottom: 16px;
+}
+
+.tarjeta-saldo-label {
+  font-size: 12px;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.7);
+  letter-spacing: 0.5px;
+}
+
+.tarjeta-saldo-monto {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 700;
+  margin-top: 2px;
+}
+
+/* Botón de recarga integrado dentro de cada tarjeta */
+.btn-recarga-tarjeta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 36px;
+  background-color: var(--naranja);
+  color: var(--blanco);
+  border-radius: 6px;
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: bold;
+  text-decoration: none;
+  transition: background-color 0.2s;
+}	
+
+/* =========================================================================
+   METROWEB PANAMÁ — PARCHE DE COLORES SÓLIDOS Y CONTROL DE TEXTO BLANCO
+   ========================================================================= */
+
+/* 1. Cambiar los fondos a colores sólidos usando selectores combinados específicos */
+div.tarjeta-transporte.tarjeta-solida-azul {
+    background: #1A3A6B;
+    background-color: #1A3A6B;
+}
+
+div.tarjeta-transporte.tarjeta-solida-naranja {
+    background: #D35400; /* Naranja ocre/terracota */
+    background-color: #D35400;
+}
+
+div.tarjeta-transporte.tarjeta-solida-verde {
+    background: #38EF7D; /* Verde brillante */
+    background-color: #38EF7D;
+}
+
+/* 2. Control estricto de fuentes internas para evitar que el CSS viejo las pinte de gris */
+div.tarjeta-transporte.tarjeta-solida-azul *,
+div.tarjeta-transporte.tarjeta-solida-naranja * {
+    color: var(--blanco);
+}
+
+/* Para la tarjeta verde, usamos texto oscuro para asegurar contraste legible */
+div.tarjeta-transporte.tarjeta-solida-verde *,
+div.tarjeta-transporte.tarjeta-solida-verde .tarjeta-numero,
+div.tarjeta-transporte.tarjeta-solida-verde .tarjeta-saldo-label {
+    color: var(--negro);
+}
+
+/* 3. Estilo para el botón único "Editar" en la esquina superior de la tarjeta */
+div.tarjeta-transporte .tarjeta-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+div.tarjeta-transporte .tarjeta-gestion-links {
+    background: rgba(255, 255, 255, 0.25);
+    padding: 4px 14px;
+    border-radius: 20px;
+}
+
+div.tarjeta-transporte.tarjeta-solida-verde .tarjeta-gestion-links {
+    background: rgba(0, 0, 0, 0.08);
+}
+
+div.tarjeta-transporte .link-gestion {
+    color: inherit;
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+div.tarjeta-transporte .link-gestion:hover {
+    text-decoration: underline;
+}
+
+
+/* =========================================================================
+   PÁGINA DE EDICIÓN / GESTIÓN DE TARJETA (BORDES REDONDEADOS)
+   ========================================================================= */
+
+/* Fondo azul completo de la sección (idéntico al de home.jsp / var(--azul)) */
+main.seccion-gestion-azul {
+    background-color: var(--azul);
+    min-height: calc(100vh - 140px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px var(--sp-4);
+    box-sizing: border-box;
+}
+
+/* Contenedor compacto del formulario */
+.contenedor-formulario-compacto {
+    width: 100%;
+    max-width: 480px;
+    margin: 0 auto;
+}
+
+/* Caja blanca con bordes ligeramente redondeados (Idéntica a Saldos y Movimientos) */
+.caja-formulario-blanca {
+    background: var(--blanco);
+    padding: var(--sp-8);
+    border-radius: 20px; /* Esquinas de 12px / 0.75rem heredadas de tus tablas */
+    box-shadow: 0 10px 25px rgba(15, 25, 35, 0.15);
+    box-sizing: border-box;
+}
+
+.caja-formulario-blanca h3 {
+    margin: 0 0 var(--sp-2) 0;
+    font-family: var(--font-display);
+    font-size: 1.6rem;
+    color: var(--negro);
+}
+
+.subtitulo-gestion {
+    color: var(--gris-medio);
+    font-size: 0.95rem;
+    margin: 0 0 var(--sp-6) 0;
+}
+
+/* Disposición de campos */
+.campo-gestion {
+    display: flex;
+    flex-direction: column;
+}
+
+.campo-gestion label {
+    margin-bottom: var(--sp-2);
+    font-weight: 500;
+    font-size: 0.9rem;
+    color: var(--gris-oscuro);
+}
+
+.espacio-campos {
+    margin-top: var(--sp-4);
+}
+
+/* Inputs deshabilitados de solo lectura */
+.caja-formulario-blanca .input-solo-lectura {
+    background-color: var(--gris-fondo);
+    color: var(--gris-medio);
+    cursor: not-allowed;
+    border: 1px solid var(--gris-borde);
+}
+
+.caja-formulario-blanca .input-solo-lectura.texto-negrita {
+    font-weight: 600;
+    color: var(--gris-oscuro);
+}
+
+/* Alertas de error */
+.alerta-error-gestion {
+    background-color: #FCE4E4;
+    border: 1px solid #FCC2C2;
+    color: #CC0000;
+    padding: var(--sp-3);
+    margin-bottom: var(--sp-4);
+    border-radius: var(--br-md);
+    font-weight: 500;
+    text-align: center;
+    font-size: 0.9rem;
+}
+
+/* Botonera interna */
+.boton-guardar {
+    margin-top: var(--sp-6);
+}
+
+.caja-formulario-blanca .boton-borrar-rojo {
+    margin-top: var(--sp-3);
+    background-color: #CC0000;
+    color: #FFFFFF;
+    border: none;
+    transition: background-color 0.2s;
+}
+
+.caja-formulario-blanca .boton-borrar-rojo:hover {
+    background-color: #B30000;
+}
+
+.link-volver-atras {
+    display: block;
+    text-align: center;
+    margin-top: var(--sp-5);
+    color: var(--azul);
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.link-volver-atras:hover {
+    color: var(--azul-hover);
+    text-decoration: underline;
+}
+
+/* ─── REDUCIR ESPACIO SUPERIOR EXCLUSIVO EN PANEL PRINCIPAL ─── */
+.dashboard-bienvenida {
+    margin-top: calc(var(--sp-6) * -1); /* Sube el contenido usando un margen negativo controlado (-24px) */
+    margin-bottom: var(--sp-4);        /* Mantiene una separación limpia con las tarjetas inferiores */
+}

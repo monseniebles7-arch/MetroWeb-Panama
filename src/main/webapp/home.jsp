@@ -57,7 +57,7 @@
                                 response.sendRedirect("agregar-tarjeta.jsp");
                                 return;
                             } else {
-                                response.sendRedirect("pagina_principal.jsp");
+                                response.sendRedirect("usuario_inicio.jsp");
                                 return;
                             }
                         }
