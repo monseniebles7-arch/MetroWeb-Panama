@@ -12,7 +12,7 @@
 
     // Si entran a la página sin un número de tarjeta en la URL, los devolvemos
     if (numTarjetaParam == null || numTarjetaParam.trim().isEmpty()) {
-        response.sendRedirect("pagina_principal.jsp");
+        response.sendRedirect("usuario_inicio.jsp");
         return;
     }
 
@@ -63,7 +63,7 @@
         }
 
         if (esExito) {
-            response.sendRedirect("pagina_principal.jsp");
+            response.sendRedirect("usuario_inicio.jsp");
             return;
         }
     }
@@ -85,7 +85,7 @@
             aliasTarjeta = rs.getString("alias_tarjeta");
             tipoTarjetaDescripcion = rs.getString("descripcion");
         } else {
-            response.sendRedirect("pagina_principal.jsp");
+            response.sendRedirect("usuario_inicio.jsp");
             return;
         }
     } catch (Exception e) {
@@ -121,7 +121,7 @@
                     </div>
                 <% } %>
 
-                <form action="gestion_tarjeta.jsp?num_tarjeta=<%= numTarjeta %>" method="POST">
+                <form action="editar_datos_tarjeta.jsp?num_tarjeta=<%= numTarjeta %>" method="POST">
                     
                     <div class="campo-gestion">
                         <label for="numTarjeta">Número de Tarjeta</label>
@@ -166,7 +166,7 @@
                         Borrar Tarjeta
                     </button>
                     
-                    <a href="pagina_principal.jsp" class="link-volver-atras">
+                    <a href="usuario_inicio.jsp" class="link-volver-atras">
                         Volver al panel de control
                     </a>
                 </form>
