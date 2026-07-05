@@ -46,21 +46,17 @@
         </ul>
       </div>
 
-      <!-- Columna 3: Enlaces de Reportes, Soporte Informativo y Cierre de Sesión -->
+      <!-- Columna 3: Enlaces de Soporte Informativo y Cierre de Sesión -->
       <div class="footer-col">
         <h4>Soporte</h4>
         <ul>
-          <%-- 4. Reportes --%>
-          <li>
-            <a href="<c:url value='/admin_reportes.jsp'/>" class="<%= paginaActualAdmin.equals("admin_reportes.jsp") ? "activo" : "" %>">📊 Reportes</a>
-          </li>
           <%-- 5. Sobre nosotros --%>
           <li>
             <a href="<c:url value='/nosotros.jsp'/>" class="<%= paginaActualAdmin.equals("nosotros.jsp") ? "activo" : "" %>">ℹ️ Sobre nosotros</a>
           </li>
           <%-- 6. Cerrar sesión por medio del Servlet correspondiente --%>
           <li>
-            <a href="<c:url value='/CerrarSesionServlet'/>">🚪 Cerrar sesión</a>
+            <a href="<c:url value='/home.jsp'/>">🚪 Cerrar sesión</a>
           </li>
         </ul>
       </div>
