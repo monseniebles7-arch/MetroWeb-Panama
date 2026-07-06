@@ -4,7 +4,7 @@
     <div class="banner-inner">
       <div class="banner-logo">
         <a href="home.jsp">
-          <img src="PNGS/logometro.png" alt="MetroWeb Panamá"/>
+          <img src="PNGS/banner.png" alt="MetroWeb Panamá"/>
         </a>
       </div>
     </div>
