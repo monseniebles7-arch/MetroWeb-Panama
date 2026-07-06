@@ -405,31 +405,37 @@ tbody tr:hover { background: var(--gris-fondo); }
 
 
 /* ═══════════════════════════
-   BANNER SUPERIOR
+    BANNER SUPERIOR (SIN LÍNEAS NEGRAS)
 ═══════════════════════════ */
 
-/* Banner con logo centrado y línea naranja */
 .banner {
-  background: #ffffff;
-  padding: 10px 0;
+  background: #040914; 
+  padding: 0;          /* 💡 Cambiado a 0: Quitamos el espacio negro de arriba y abajo */
   border-bottom: 3px solid var(--naranja);
+  width: 100%;
+  overflow: hidden;
 }
 
 .banner-inner {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: min(1120px, 92vw);
-  margin: 0 auto;
-}
-
-/* Logo centrado */
-.banner-logo img {
-  height: 100px;
   display: block;
-  margin: 0 auto;
+  width: 100%;
+  margin: 0;
 }
 
+.banner-logo, 
+.banner-logo a {
+  display: block;
+  width: 100%;
+}
+
+.banner-logo img {
+  width: 100%;          
+  height: auto;         
+  max-height: none;     /* 💡 Cambiado a none: Dejamos que la altura se adapte libremente al ancho sin topar con límites */
+  object-fit: cover;    /* 💡 Cambiado a cover: Garantiza que la imagen llene el contenedor al 100% sin dejar bordes vacíos */
+  display: block;       
+  margin: 0 auto;       
+}
 /* ═══════════════════════════
    MENÚ DE NAVEGACIÓN
 ═══════════════════════════ */
