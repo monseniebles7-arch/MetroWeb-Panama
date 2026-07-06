@@ -50,7 +50,7 @@
         
         <%-- 5. Historial y Movimientos --%>
         <li>
-          <a href="historial_viajes.jsp" class="<%= paginaActual.equals("historial_viajes.jsp") ? "activo" : "" %>"> Historial y Movimientos</a>
+          <a href="historial_viajes.jsp" class="<%= paginaActual.equals("historial_viajes.jsp") ? "activo" : "" %>"> Movimientos</a>
         </li>
         
         <%-- 6. Sobre nosotros --%>
