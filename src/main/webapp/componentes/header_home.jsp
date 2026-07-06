@@ -16,7 +16,7 @@
       
       <ul class="nav-links">
         <li><a href="home.jsp"> Inicio</a></li>
-        <li><a href="nosotros.jsp"> Sobre Nosotros</a></li>
+        <li><a href="nosotros_home.jsp"> Sobre Nosotros</a></li>
       </ul>
 
       <div class="nav-iconos">
