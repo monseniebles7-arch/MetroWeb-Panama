@@ -38,32 +38,27 @@
           <a href="perfil.jsp" class="<%= paginaActual.equals("perfil.jsp") ? "activo" : "" %>"> Perfil</a>
         </li>
         
-        <%-- 3. Recargar Tarjeta --%>
-        <li>
-          <a href="Recarga_tarjetas.jsp" class="<%= paginaActual.equals("Recarga_tarjetas.jsp") ? "activo" : "" %>"> Recargar Tarjeta</a>
-        </li>
-        
-        <%-- 4. Agregar Tarjeta --%>
+        <%-- 3. Agregar Tarjeta --%>
         <li>
           <a href="agregar-tarjeta.jsp" class="<%= paginaActual.equals("agregar-tarjeta.jsp") ? "activo" : "" %>"> Agregar Tarjeta</a>
         </li>
         
-        <%-- 5. Saldo --%>
+        <%-- 4. Saldo --%>
         <li>
           <a href="saldo.jsp" class="<%= paginaActual.equals("saldo.jsp") ? "activo" : "" %>"> Saldo</a>
         </li>
         
-        <%-- 6. Historial y Movimientos --%>
+        <%-- 5. Historial y Movimientos --%>
         <li>
           <a href="historial_viajes.jsp" class="<%= paginaActual.equals("historial_viajes.jsp") ? "activo" : "" %>"> Historial y Movimientos</a>
         </li>
         
-        <%-- 7. Sobre nosotros --%>
+        <%-- 6. Sobre nosotros --%>
         <li>
           <a href="nosotros.jsp" class="<%= paginaActual.equals("nosotros.jsp") ? "activo" : "" %>"> Sobre nosotros</a>
         </li>
         
-        <%-- 8. Cerrar sesión --%>
+        <%-- 7. Cerrar sesión --%>
         <li>
           <a href="cerrar_sesion.jsp"> Cerrar sesión</a>
         </li>
@@ -71,6 +66,8 @@
 
       <div class="nav-iconos">
         <a href="https://www.google.com" target="_blank" class="icono-busqueda" title="Buscar en Google">🔍 Buscar</a>
+        
+        <%-- Iconos configurados a la escala exacta de tus capturas de pantalla --%>
         <a href="https://facebook.com" target="_blank" title="Facebook">
           <img src="<%= rootPath %>/PNGS/facebook.png" alt="Facebook" style="height:26px; width:26px; object-fit:contain;"/>
         </a>
