@@ -29,12 +29,12 @@
 
         <div class="grid-cards">
             <div class="card">
-                <img src="PNGS/instagram.png" alt="Integrante 1" style="width: 100%; aspect-ratio: 1/1; object-fit: cover; background-color: var(--gris-borde);">
+                <img src="PNGS/Gcedeno.png" alt="Integrante 1" style="width: 100%; aspect-ratio: 1/1; object-fit: cover; background-color: var(--gris-borde);">
                 <div class="card-body">
                     <p class="mb-2"><span class="fw-600">Nombre:</span> Gabriel Cedeño</p>
                     <p class="mb-2 text-sm"><span class="fw-600">Cédula:</span> 8-985-584</p>
                     <p class="mb-2 text-sm"><span class="fw-600">Edad:</span> 23 años</p>
-                    <p class="mb-0 text-sm"><span class="fw-600">Descripción:</span> Desarrollador de software enfocado en la arquitectura del sistema.</p>
+                    <p class="mb-0 text-sm"><span class="fw-600">Descripción:</span> Me gusta jugar videojuegos y escuchar musica en mi tiempo libre, fan de F1, fútbol y un poco de todo.</p>
                 </div>
             </div>
 
