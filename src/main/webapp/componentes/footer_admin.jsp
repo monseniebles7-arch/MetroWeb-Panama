@@ -52,7 +52,7 @@
         <ul>
           <%-- 5. Sobre nosotros --%>
           <li>
-            <a href="<c:url value='/nosotros.jsp'/>" class="<%= paginaActualAdmin.equals("nosotros.jsp") ? "activo" : "" %>">ℹ️ Sobre nosotros</a>
+            <a href="<c:url value='/nosotros_admin.jsp'/>" class="<%= paginaActualAdmin.equals("nosotros.jsp") ? "activo" : "" %>">ℹ️ Sobre nosotros</a>
           </li>
           <%-- 6. Cerrar sesión por medio del Servlet correspondiente --%>
           <li>

@@ -6,7 +6,7 @@
     // =========================================================================
     Integer idUsuarioLogueado = (Integer) session.getAttribute("id_usuario");
     if (idUsuarioLogueado == null) {
-        idUsuarioLogueado = 2; // ID de respaldo para tus pruebas locales con 'Luis'
+        idUsuarioLogueado = 4; // Ajustado al ID 4 (Luis) para coincidir con tus datos de prueba
     }
 
     // Capturamos la tarjeta seleccionada desde el menú desplegable
@@ -38,7 +38,7 @@
         // =========================================================================
         // 2. OBTENER INFORMACIÓN DEL USUARIO (Independiente de la tarjeta)
         // =========================================================================
-        String sqlUsuario = "SELECT nombre, apellido FROM usuario WHERE id_usuario = ?";
+        String sqlUsuario = "SELECT nombre, apellido FROM Usuario WHERE id_usuario = ?";
         ps = cn.prepareStatement(sqlUsuario);
         ps.setInt(1, idUsuarioLogueado);
         rs = ps.executeQuery();
@@ -52,7 +52,7 @@
         // 3. SELECCIÓN DE LA TARJETA POR DEFECTO (Si no se ha elegido ninguna aún)
         // =========================================================================
         if (idTarjetaSeleccionada == 0) {
-            String sqlPrimera = "SELECT id_tarjeta FROM tarjeta WHERE id_usuario = ? LIMIT 1";
+            String sqlPrimera = "SELECT id_tarjeta FROM Tarjeta WHERE id_usuario = ? LIMIT 1";
             ps = cn.prepareStatement(sqlPrimera);
             ps.setInt(1, idUsuarioLogueado);
             rs = ps.executeQuery();
@@ -68,8 +68,8 @@
         // =========================================================================
         if (idTarjetaSeleccionada > 0) {
             
-            // Datos generales de la tarjeta activa
-            String sqlTarjeta = "SELECT numero_tarjeta, saldo, alias_tarjeta FROM tarjeta WHERE id_tarjeta = ? AND id_usuario = ?";
+            // Datos generales de la tarjeta activa (Apuntando a la tabla correcta 'Tarjeta')
+            String sqlTarjeta = "SELECT numero_tarjeta, saldo, alias_tarjeta FROM Tarjeta WHERE id_tarjeta = ? AND id_usuario = ?";
             ps = cn.prepareStatement(sqlTarjeta);
             ps.setInt(1, idTarjetaSeleccionada);
             ps.setInt(2, idUsuarioLogueado);
@@ -82,13 +82,12 @@
             rs.close();
             ps.close();
 
-            // Resumen de RECARGAS filtrado por el año 2026 y meses Mayo(5), Junio(6), Julio(7)
+            // Resumen de RECARGAS - Cuenta de forma automatizada tanto inserts como recargas de la página
             String sqlResumenRecargas = 
                 "SELECT MONTH(fecha_hora) as mes, SUM(monto) as total_monto, COUNT(id_recarga) as total_cant " +
-                "FROM recarga " +
+                "FROM Recarga " +
                 "WHERE id_tarjeta = ? AND YEAR(fecha_hora) = 2026 AND MONTH(fecha_hora) IN (5, 6, 7) " +
                 "GROUP BY MONTH(fecha_hora)";
-            
             ps = cn.prepareStatement(sqlResumenRecargas);
             ps.setInt(1, idTarjetaSeleccionada);
             rs = ps.executeQuery();
@@ -101,13 +100,12 @@
             rs.close();
             ps.close();
 
-            // Resumen de USO (Buses y Metro) obtenido de tu tabla historialsaldo
+            // Resumen de USO - Corregido apuntando a 'HistorialSaldo' y usando la columna exacta 'monto_usado'
             String sqlResumenUso = 
-                "SELECT MONTH(fecha_hora) as mes, SUM(monto_used) as total_uso, COUNT(id_historial) as total_val " +
-                "FROM historialsaldo " +
+                "SELECT MONTH(fecha_hora) as mes, SUM(monto_usado) as total_uso, COUNT(id_historial) as total_val " +
+                "FROM HistorialSaldo " +
                 "WHERE id_tarjeta = ? AND YEAR(fecha_hora) = 2026 AND MONTH(fecha_hora) IN (5, 6, 7) " +
                 "GROUP BY MONTH(fecha_hora)";
-            
             ps = cn.prepareStatement(sqlResumenUso);
             ps.setInt(1, idTarjetaSeleccionada);
             rs = ps.executeQuery();
@@ -154,7 +152,7 @@
                                 ResultSet rsSelect = null;
                                 try {
                                     cnSelect = DriverManager.getConnection("jdbc:mysql://localhost:3306/metrowebpanama2", "root", "");
-                                    String sqlSelect = "SELECT id_tarjeta, numero_tarjeta, alias_tarjeta FROM tarjeta WHERE id_usuario = ?";
+                                    String sqlSelect = "SELECT id_tarjeta, numero_tarjeta, alias_tarjeta FROM Tarjeta WHERE id_usuario = ?";
                                     psSelect = cnSelect.prepareStatement(sqlSelect);
                                     psSelect.setInt(1, idUsuarioLogueado);
                                     rsSelect = psSelect.executeQuery();
@@ -201,8 +199,7 @@
                 </table>
 
                 <div style="display: flex; justify-content: flex-end; margin-top: 5px; margin-bottom: 35px;">
-                    <a href="Recarga_tarjetas.jsp" 
-                       style="text-decoration: none; background-color: #e8610a; color: #ffffff; padding: 12px 28px; border-radius: 8px; font-weight: 600; font-size: 15px; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 4px 12px rgba(232, 97, 10, 0.2);">
+                    <a href="Recarga_tarjetas.jsp" style="text-decoration: none; background-color: #e8610a; color: #ffffff; padding: 12px 28px; border-radius: 8px; font-weight: 600; font-size: 15px; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 4px 12px rgba(232, 97, 10, 0.2);">
                         Recargar Tarjeta
                     </a>
                 </div>
