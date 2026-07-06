@@ -33,15 +33,15 @@
         <ul>
           <%-- 1. Inicio --%>
           <li>
-            <a href="<c:url value='/admin_inicio.jsp'/>" class="<%= paginaActualAdmin.equals("admin_inicio.jsp") ? "activo" : "" %>">🏠 Inicio</a>
+            <a href="<c:url value='/admin_inicio.jsp'/>" class="<%= paginaActualAdmin.equals("admin_inicio.jsp") ? "activo" : "" %>"> Inicio</a>
           </li>
           <%-- 2. Usuarios (Se activa tanto en la tabla principal como en el formulario de edición usuario_admin.jsp) --%>
           <li>
-            <a href="<c:url value='/gestion_usuarios.jsp'/>" class="<%= paginaActualAdmin.equals("gestion_usuarios.jsp") || paginaActualAdmin.equals("usuario_admin.jsp") ? "activo" : "" %>">👥 Usuarios</a>
+            <a href="<c:url value='/gestion_usuarios.jsp'/>" class="<%= paginaActualAdmin.equals("gestion_usuarios.jsp") || paginaActualAdmin.equals("usuario_admin.jsp") ? "activo" : "" %>"> Usuarios</a>
           </li>
           <%-- 3. Tarjetas --%>
           <li>
-            <a href="<c:url value='/admin_tarjetas.jsp'/>" class="<%= paginaActualAdmin.equals("admin_tarjetas.jsp") ? "activo" : "" %>">💳 Tarjetas</a>
+            <a href="<c:url value='/admin_tarjetas.jsp'/>" class="<%= paginaActualAdmin.equals("admin_tarjetas.jsp") ? "activo" : "" %>"> Tarjetas</a>
           </li>
         </ul>
       </div>
@@ -52,11 +52,11 @@
         <ul>
           <%-- 5. Sobre nosotros --%>
           <li>
-            <a href="<c:url value='/nosotros_admin.jsp'/>" class="<%= paginaActualAdmin.equals("nosotros.jsp") ? "activo" : "" %>">ℹ️ Sobre nosotros</a>
+            <a href="<c:url value='/nosotros_admin.jsp'/>" class="<%= paginaActualAdmin.equals("nosotros.jsp") ? "activo" : "" %>"> Sobre nosotros</a>
           </li>
           <%-- 6. Cerrar sesión por medio del Servlet correspondiente --%>
           <li>
-            <a href="<c:url value='/home.jsp'/>">🚪 Cerrar sesión</a>
+            <a href="<c:url value='/home.jsp'/>"> Cerrar sesión</a>
           </li>
         </ul>
       </div>

@@ -17,11 +17,11 @@
       
       <!-- Enlaces del Admin idénticos en estilo al home -->
       <ul class="nav-links">
-        <li><a href="<c:url value='/admin_inicio.jsp'/>">🏠 Inicio</a></li>
-        <li><a href="<c:url value='/gestion_usuarios.jsp'/>">👥 Usuarios</a></li>
-        <li><a href="<c:url value='/tarjetas_admin.jsp'/>">💳 Tarjetas</a></li>
-        <li><a href="<c:url value='/nosotros_admin.jsp'/>">ℹ️ Sobre nosotros</a></li>
-        <li><a href="<c:url value='/home.jsp'/>">🚪 Cerrar sesión</a></li>
+        <li><a href="<c:url value='/admin_inicio.jsp'/>"> Inicio</a></li>
+        <li><a href="<c:url value='/gestion_usuarios.jsp'/>"> Usuarios</a></li>
+        <li><a href="<c:url value='/tarjetas_admin.jsp'/>"> Tarjetas</a></li>
+        <li><a href="<c:url value='/nosotros_admin.jsp'/>"> Sobre nosotros</a></li>
+        <li><a href="<c:url value='/home.jsp'/>"> Cerrar sesión</a></li>
       </ul>
 
       <div class="nav-iconos">
