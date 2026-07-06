@@ -5,7 +5,7 @@
     <div class="banner-inner">
       <div class="banner-logo">
         <a href="<c:url value='/admin_inicio.jsp'/>">
-          <img src="PNGS/logometro.png" alt="MetroWeb Panamá"/>
+          <img src="PNGS/banner.png" alt="MetroWeb Panamá"/>
         </a>
       </div>
     </div>

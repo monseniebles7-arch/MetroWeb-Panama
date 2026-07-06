@@ -16,7 +16,7 @@
     <div class="banner-inner">
       <div class="banner-logo">
         <a href="usuario_inicio.jsp">
-          <img src="<%= rootPath %>/PNGS/logometro.png" alt="MetroWeb Panamá"/>
+          <img src="<%= rootPath %>/PNGS/banner.png" alt="MetroWeb Panamá"/>
         </a>
       </div>
     </div>
@@ -64,18 +64,16 @@
         </li>
       </ul>
 
+      <%-- Bloque exacto de iconos solicitado --%>
       <div class="nav-iconos">
-        <a href="https://www.google.com" target="_blank" class="icono-busqueda" title="Buscar en Google">🔍 Buscar</a>
-        
-        <%-- Iconos configurados a la escala exacta de tus capturas de pantalla --%>
         <a href="https://facebook.com" target="_blank" title="Facebook">
-          <img src="<%= rootPath %>/PNGS/facebook.png" alt="Facebook" style="height:26px; width:26px; object-fit:contain;"/>
+          <img src="PNGS/facebook.png" alt="Facebook" style="height:26px; width:26px; object-fit:contain;"/>
         </a>
         <a href="https://twitter.com" target="_blank" title="Twitter / X">
-          <img src="<%= rootPath %>/PNGS/twitter.png" alt="Twitter" style="height:26px; width:26px; object-fit:contain;"/>
+          <img src="PNGS/twitter.png" alt="Twitter" style="height:26px; width:26px; object-fit:contain;"/>
         </a>
         <a href="https://instagram.com" target="_blank" title="Instagram">
-          <img src="<%= rootPath %>/PNGS/instagram.png" alt="Instagram" style="height:26px; width:26px; object-fit:contain;"/>
+          <img src="PNGS/instagram.png" alt="Instagram" style="height:26px; width:26px; object-fit:contain;"/>
         </a>
       </div>
 
