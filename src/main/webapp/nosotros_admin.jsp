@@ -39,7 +39,7 @@
             </div>
 
             <div class="card">
-                <img src="PNGS/twitter.png" alt="Integrante 2" style="width: 100%; aspect-ratio: 1/1; object-fit: cover; background-color: var(--gris-borde);">
+                <img src="PNGS/Roberto.jpeg" alt="Integrante 2" style="width: 100%; aspect-ratio: 1/1; object-fit: cover; background-color: var(--gris-borde);">
                 <div class="card-body">
                     <p class="mb-2"><span class="fw-600">Nombre:</span> Roberto de Gracia</p>
                     <p class="mb-2 text-sm"><span class="fw-600">Cédula:</span> 8-1028-2132</p>
