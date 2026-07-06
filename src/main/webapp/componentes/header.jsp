@@ -65,6 +65,7 @@
       </ul>
 
       <%-- Bloque exacto de iconos solicitado --%>
+      <div><a href="https://www.google.com" target="_blank" class="icono-busqueda" title="Buscar en Google">🔍 Buscar</a></div>
       <div class="nav-iconos">
         <a href="https://facebook.com" target="_blank" title="Facebook">
           <img src="PNGS/facebook.png" alt="Facebook" style="height:26px; width:26px; object-fit:contain;"/>
